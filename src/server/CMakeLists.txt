@@ -4,16 +4,12 @@ set(SERVER_LIB_SRCS
     blur_interface.cpp
     buffer_interface.cpp
     clientconnection.cpp
-    clientmanagement_interface.cpp
     compositor_interface.cpp
     contrast_interface.cpp
     datadevice_interface.cpp
     datadevicemanager_interface.cpp
     dataoffer_interface.cpp
     datasource_interface.cpp
-    ddeseat_interface.cpp
-    ddekeyboard_interface.cpp
-    ddeshell_interface.cpp
     display.cpp
     dpms_interface.cpp
     eglstream_controller_interface.cpp
@@ -51,7 +47,6 @@ set(SERVER_LIB_SRCS
     shadow_interface.cpp
     shell_interface.cpp
     slide_interface.cpp
-    strut_interface.cpp
     subcompositor_interface.cpp
     surface_interface.cpp
     surfacerole.cpp
@@ -240,26 +235,6 @@ ecm_add_qtwayland_server_protocol(SERVER_LIB_SRCS
     BASENAME tablet-unstable-v2
 )
 
-ecm_add_wayland_server_protocol(SERVER_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/client-management.xml
-    BASENAME client-management
-)
-
-ecm_add_wayland_server_protocol(SERVER_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/dde-seat.xml
-    BASENAME dde-seat
-)
-
-ecm_add_wayland_server_protocol(SERVER_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/dde-shell.xml
-    BASENAME dde-shell
-)
-
-ecm_add_wayland_server_protocol(SERVER_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/strut.xml
-    BASENAME strut
-)
-
 set(SERVER_GENERATED_SRCS
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-blur-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-blur-server-protocol.h
@@ -319,14 +294,6 @@ set(SERVER_GENERATED_SRCS
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-v6-server-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-tablet-unstable-v2.h
     ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-tablet-unstable-v2.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-client-management-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-client-management-server-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-dde-seat-server-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-dde-seat-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-dde-shell-server-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-dde-shell-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-strut-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-strut-server-protocol.h
 )
 
 set_source_files_properties(${SERVER_GENERATED_SRCS} PROPERTIES SKIP_AUTOMOC ON)
@@ -342,12 +309,11 @@ ecm_generate_export_header(KF5WaylandServer
     VERSION ${KF_VERSION}
     DEPRECATED_BASE_VERSION 0
     DEPRECATION_VERSIONS 5.5 5.28 5.50 5.52 5.69 5.73
+    EXCLUDE_DEPRECATED_BEFORE_AND_AT ${EXCLUDE_DEPRECATED_BEFORE_AND_AT}
 )
-# TODO: add support for EXCLUDE_DEPRECATED_BEFORE_AND_AT to all KWayland libs
-# needs fixing of undeprecated API being still implemented using own deprecated API
 
-
-target_include_directories(KF5WaylandServer INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF5}/KWayland/Server>")
+target_include_directories(KF5WaylandServer
+    INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF}/KWayland;${KDE_INSTALL_INCLUDEDIR_KF5}/KWayland/Server>")
 
 target_link_libraries(KF5WaylandServer
     PUBLIC Qt5::Gui
@@ -362,7 +328,7 @@ set_target_properties(KF5WaylandServer PROPERTIES VERSION   ${KWAYLAND_VERSION}
                                                  EXPORT_NAME WaylandServer
 )
 
-install(TARGETS KF5WaylandServer EXPORT KF5WaylandTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5WaylandServer EXPORT KF5WaylandTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 set(SERVER_LIB_HEADERS
   ${CMAKE_CURRENT_BINARY_DIR}/KWayland/Server/kwaylandserver_export.h
@@ -370,15 +336,12 @@ set(SERVER_LIB_HEADERS
   blur_interface.h
   buffer_interface.h
   clientconnection.h
-  clientmanagement_interface.h
   compositor_interface.h
   contrast_interface.h
   datadevice_interface.h
   datadevicemanager_interface.h
   dataoffer_interface.h
   datasource_interface.h
-  ddeseat_interface.h
-  ddeshell_interface.h
   display.h
   dpms_interface.h
   eglstream_controller_interface.h
@@ -412,7 +375,6 @@ set(SERVER_LIB_HEADERS
   shadow_interface.h
   shell_interface.h
   slide_interface.h
-  strut_interface.h
   subcompositor_interface.h
   surface_interface.h
   tablet_interface.h

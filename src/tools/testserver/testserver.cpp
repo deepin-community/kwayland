@@ -17,7 +17,9 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QProcess>
+#include <QStandardPaths>
 #include <QTimer>
+
 // system
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -85,10 +87,10 @@ void TestServer::init()
             m_seat->setTimestamp(m_timeSinceStart->elapsed());
             m_seat->pointerButtonReleased(button);
         });
-        /*connect(device, &FakeInputDevice::pointerAxisRequested, this, [this](Qt::Orientation orientation, qreal delta) {
+        connect(device, &FakeInputDevice::pointerAxisRequested, this, [this](Qt::Orientation orientation, qreal delta) {
             m_seat->setTimestamp(m_timeSinceStart->elapsed());
             m_seat->pointerAxis(orientation, delta);
-        });*/
+        });
         connect(device, &FakeInputDevice::touchDownRequested, this, [this](quint32 id, const QPointF &pos) {
             m_seat->setTimestamp(m_timeSinceStart->elapsed());
             m_touchIdMapper.insert(id, m_seat->touchDown(pos));
@@ -137,6 +139,14 @@ void TestServer::startTestApp(const QString &app, const QStringList &arguments)
         QCoreApplication::instance()->exit(1);
         return;
     }
+
+    const QString exec = QStandardPaths::findExecutable(app);
+    if (exec.isEmpty()) {
+        qWarning() << "Couldn't find executable:" << app;
+        QCoreApplication::instance()->exit(1);
+        return;
+    }
+
     QProcess *p = new QProcess(this);
     p->setProcessChannelMode(QProcess::ForwardedChannels);
     QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
@@ -148,7 +158,7 @@ void TestServer::startTestApp(const QString &app, const QStringList &arguments)
     connect(p, &QProcess::errorOccurred, this, [] {
         QCoreApplication::instance()->exit(1);
     });
-    p->start(app, arguments);
+    p->start(exec, arguments);
 }
 
 void TestServer::repaint()

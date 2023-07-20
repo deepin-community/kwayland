@@ -10,7 +10,7 @@
 #include <QPointer>
 #include <QSize>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct wl_output;
 class QPoint;
@@ -173,6 +173,16 @@ public:
      * @returns The Modes of this Output.
      **/
     QList<Mode> modes() const;
+
+    /**
+     * Returns the name of the output.
+     **/
+    QString name() const;
+
+    /**
+     * Returns the human readable description of the output.
+     **/
+    QString description() const;
 
     /**
      * Sets the @p queue to use for bound proxies.

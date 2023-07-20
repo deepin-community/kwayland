@@ -18,6 +18,8 @@
 // Wayland
 #include <wayland-client-protocol.h>
 
+#include <poll.h>
+
 namespace KWayland
 {
 namespace Client
@@ -30,6 +32,7 @@ public:
     void doInitConnection();
     void setupSocketNotifier();
     void setupSocketFileWatcher();
+    void dispatchEvents();
 
     wl_display *display = nullptr;
     int fd = -1;
@@ -106,22 +109,45 @@ void ConnectionThread::Private::setupSocketNotifier()
     const int fd = wl_display_get_fd(display);
     socketNotifier.reset(new QSocketNotifier(fd, QSocketNotifier::Read));
     QObject::connect(socketNotifier.data(), &QSocketNotifier::activated, q, [this]() {
-        if (!display) {
+        dispatchEvents();
+    });
+}
+
+void ConnectionThread::Private::dispatchEvents()
+{
+    if (!display) {
+        return;
+    }
+    // first dispatch any pending events on the default queue
+    while (wl_display_prepare_read(display) != 0) {
+        wl_display_dispatch_pending(display);
+    }
+    wl_display_flush(display);
+    // then check if there are any new events waiting to be read
+    struct pollfd pfd;
+    pfd.fd = wl_display_get_fd(display);
+    pfd.events = POLLIN;
+    int ret = poll(&pfd, 1, 0);
+    if (ret > 0) {
+        // if yes, read them now
+        wl_display_read_events(display);
+    } else {
+        wl_display_cancel_read(display);
+    }
+
+    // finally, dispatch the default queue and all frame queues
+    if (wl_display_dispatch_pending(display) == -1) {
+        error = wl_display_get_error(display);
+        if (error != 0) {
+            if (display) {
+                free(display);
+                display = nullptr;
+            }
+            Q_EMIT q->errorOccurred();
             return;
         }
-        if (wl_display_dispatch(display) == -1) {
-            error = wl_display_get_error(display);
-            if (error != 0) {
-                if (display) {
-                    free(display);
-                    display = nullptr;
-                }
-                Q_EMIT q->errorOccurred();
-                return;
-            }
-        }
-        Q_EMIT q->eventsRead();
-    });
+    }
+    Q_EMIT q->eventsRead();
 }
 
 void ConnectionThread::Private::setupSocketFileWatcher()
@@ -208,7 +234,7 @@ ConnectionThread *ConnectionThread::fromApplication(QObject *parent)
 
 void ConnectionThread::initConnection()
 {
-    QMetaObject::invokeMethod(this, "doInitConnection", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, &ConnectionThread::doInitConnection, Qt::QueuedConnection);
 }
 
 void ConnectionThread::doInitConnection()

@@ -10,8 +10,8 @@
 #include <QPoint>
 #include <QVector>
 
+#include "KWayland/Client/kwaylandclient_export.h"
 #include "outputdevice.h"
-#include <KWayland/Client/kwaylandclient_export.h>
 
 struct org_kde_kwin_outputmanagement;
 struct org_kde_kwin_outputconfiguration;
@@ -149,15 +149,6 @@ public:
      * @param modeId the id of the mode.
      */
     void setMode(OutputDevice *outputdevice, const int modeId);
-    /**
-     * Set brightness for this output, for example rotated or flipped.
-     * The changes done in this call will be recorded in the
-     * OutputDevice and only applied after apply() has been called.
-     *
-     * @param outputdevice the OutputDevice this change applies to.
-     * @param brightness the brightnessing factor for this output device.
-     */
-    void setBrightness(OutputDevice *outputdevice, const int brightness);
     /**
      * Set transformation for this output, for example rotated or flipped.
      * The changes done in this call will be recorded in the

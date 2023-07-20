@@ -10,7 +10,7 @@
 
 #include <QObject>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct wl_data_device;
 
@@ -91,7 +91,6 @@ public:
     operator wl_data_device *() const;
 
 Q_SIGNALS:
-    void dataOffered(KWayland::Client::DataOffer *);
     void selectionOffered(KWayland::Client::DataOffer *);
     void selectionCleared();
     /**

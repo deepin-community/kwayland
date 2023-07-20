@@ -35,7 +35,7 @@ private:
     static const quint32 s_version;
 };
 
-const quint32 PlasmaShellInterface::Private::s_version = 6;
+const quint32 PlasmaShellInterface::Private::s_version = 7;
 
 PlasmaShellInterface::Private::Private(PlasmaShellInterface *q, Display *d)
     : Global::Private(d, &org_kde_plasma_shell_interface, s_version)
@@ -237,14 +237,8 @@ void PlasmaShellSurfaceInterface::Private::setRole(uint32_t role)
     case ORG_KDE_PLASMA_SURFACE_ROLE_CRITICALNOTIFICATION:
         r = Role::CriticalNotification;
         break;
-    case ORG_KDE_PLASMA_SURFACE_ROLE_STANDALONE:
-        r = Role::StandAlone;
-        break;
-    case ORG_KDE_PLASMA_SURFACE_ROLE_OVERRIDE:
-        r = Role::Override;
-        break;
-    case ORG_KDE_PLASMA_SURFACE_ROLE_ACTIVEFULLSCREEN:
-        r = Role::ActiveFullScreen;
+    case ORG_KDE_PLASMA_SURFACE_ROLE_APPLETPOPUP:
+        r = Role::AppletPopup;
         break;
     case ORG_KDE_PLASMA_SURFACE_ROLE_NORMAL:
     default:
@@ -403,12 +397,6 @@ bool PlasmaShellSurfaceInterface::panelTakesFocus() const
 PlasmaShellSurfaceInterface *PlasmaShellSurfaceInterface::get(wl_resource *native)
 {
     return Private::get<PlasmaShellSurfaceInterface>(native);
-}
-
-void PlasmaShellSurfaceInterface::resetPositionSet()
-{
-    Q_D();
-    d->m_positionSet = false;
 }
 
 }

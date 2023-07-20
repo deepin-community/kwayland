@@ -77,10 +77,6 @@ class EglStreamControllerInterface;
 class KeyStateInterface;
 class LinuxDmabufUnstableV1Interface;
 class TabletManagerInterface;
-class ClientManagementInterface;
-class DDESeatInterface;
-class DDEShellInterface;
-class StrutInterface;
 
 /**
  * @brief Class holding the Wayland server display loop.
@@ -193,7 +189,6 @@ public:
     ContrastManagerInterface *createContrastManager(QObject *parent = nullptr);
     SlideManagerInterface *createSlideManager(QObject *parent = nullptr);
     DpmsManagerInterface *createDpmsManager(QObject *parent = nullptr);
-    ClientManagementInterface *createClientManagement(QObject *parent = nullptr);
 
     /** @since 5.60 */
     KeyStateInterface *createKeyStateInterface(QObject *parent = nullptr);
@@ -296,14 +291,6 @@ public:
     PlasmaVirtualDesktopManagementInterface *createPlasmaVirtualDesktopManagement(QObject *parent = nullptr);
 
     /**
-     * Creates the DDESeatInterface in interface @p version.
-     *
-     * @returns The created manager object
-     * @since 5.52
-     **/
-    DDESeatInterface *createDDESeat(QObject *parent = nullptr);
-
-    /**
      * Creates the XdgDecorationManagerInterface
      * @arg shellInterface A created XdgShellInterface based on XDG_WM_BASE
      *
@@ -326,22 +313,6 @@ public:
      * @since 5.67
      */
     TabletManagerInterface *createTabletManagerInterface(QObject *parent = nullptr);
-
-    /**
-     * Creates the DDEShellInterface in interface @p version.
-     *
-     * @returns The created manager object
-     * @since 5.52
-     **/
-    DDEShellInterface *createDDEShell(QObject *parent = nullptr);
-
-    /**
-     * Creates the StrutInterface in interface @p version.
-     *
-     * @returns The created strut object
-     * @since 5.52
-     **/
-    StrutInterface *createStrut(QObject *parent = nullptr);
 
     /**
      * Gets the ClientConnection for the given @p client.

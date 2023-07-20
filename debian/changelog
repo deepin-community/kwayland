@@ -1,11 +1,114 @@
-kwayland (4:5.90.0-1deepin) unstable; urgency=medium
+kwayland (4:5.103.0-1) unstable; urgency=medium
 
-  [ LiChengGang ]
-  *update changelog 
+  [ Aurélien COUDERC ]
+  * New upstream release (5.103.0).
+  * Update build-deps and deps with the info from cmake.
 
- -- LiChengGang <lichenggang@uniontech.com>  Tue, 28 Mar 2023 14:57:18 +0800
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 12 Feb 2023 21:44:23 +0100
 
-kwayland (4:5.90.0-1) experimental; urgency=medium
+kwayland (4:5.102.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.102.0).
+  * Update build-deps and deps with the info from cmake.
+  * Bump Standards-Version to 4.6.2, no change required.
+  * Replace obsolete libegl1-mesa-dev build dependency with libegl-dev.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 22 Jan 2023 21:35:02 +0100
+
+kwayland (4:5.101.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.101.0).
+  * Update build-deps and deps with the info from cmake.
+  * Update symbols from build for 5.101.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Tue, 13 Dec 2022 07:40:23 +0100
+
+kwayland (4:5.100.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.99.0).
+  * Update build-deps and deps with the info from cmake.
+  * Update symbols from build for 5.99.0.
+  * New upstream release (5.100.0).
+  * Update build-deps and deps with the info from cmake.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sat, 19 Nov 2022 23:18:57 +0100
+
+kwayland (4:5.98.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.98.0).
+  * Update build-deps and deps with the info from cmake.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 18 Sep 2022 23:11:37 +0200
+
+kwayland (4:5.97.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.97.0).
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 14 Aug 2022 18:55:29 +0200
+
+kwayland (4:5.96.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.96.0).
+  * Drop patch Fix-include-dir-in-the-generated-pri-file.patch applied
+    upstream.
+  * Update symbols from build for 5.96.0.
+  * Review copyright information.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 31 Jul 2022 13:32:58 +0200
+
+kwayland (4:5.94.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Backport upstream patch to fix include dir in the generated pri file.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Wed, 15 Jun 2022 10:25:09 +0300
+
+kwayland (4:5.94.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.94.0).
+  * Drop backported upstream patches.
+  * Update symbols from build for 5.94.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Thu, 19 May 2022 23:59:03 +0200
+
+kwayland (4:5.93.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Bump Standards-Version to 4.6.1, no changes required.
+  * Modernize building:
+    - add the dh-sequence-kf5 build dependency to use the kf5 addon
+      automatically
+    - drop all the manually specified addons and buildsystem for dh
+  * Remove inactive Uploaders.
+  * CI: enable again the blhc job.
+  * Apply the upstream patches before the Debian ones (reduces potential
+    conflicts).
+  * Backport upstream commit 70eb1df5a14c668879443a853069af750920035b to fix
+    the KWaylandClient include directory in the qmake .pri file; patch
+    upstream_Fix-include-dir-in-the-generated-pri-file.patch. (Closes: #1011015)
+
+ -- Pino Toscano <pino@debian.org>  Sun, 15 May 2022 14:12:33 +0200
+
+kwayland (4:5.93.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.92.0).
+  * Update the list of installed files.
+  * Update symbols from build for 5.92.0.
+  * New upstream release (5.93.0).
+  * Backport upstream commit to fix include path in the generated pkgconfig
+    file.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Wed, 11 May 2022 23:22:44 +0200
+
+kwayland (4:5.90.0-1) unstable; urgency=medium
 
   [ Norbert Preining ]
   * New upstream release (5.89.0).

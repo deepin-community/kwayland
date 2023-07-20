@@ -575,11 +575,6 @@ void SurfaceInterface::Private::attachBuffer(wl_resource *buffer, const QPoint &
     }
     Q_Q(SurfaceInterface);
     pending.buffer = new BufferInterface(buffer, q);
-
-    // set default damage to force initial rendering
-    auto bufferSize = pending.buffer->size();
-    pending.damage = QRegion(0, 0, bufferSize.width(), bufferSize.height());
-
     QObject::connect(pending.buffer, &BufferInterface::aboutToBeDestroyed, q, [this](BufferInterface *buffer) {
         if (pending.buffer == buffer) {
             pending.buffer = nullptr;
@@ -836,9 +831,7 @@ void SurfaceInterface::setOutputs(const QVector<OutputInterface *> &outputs)
     for (auto it = removedOutputs.constBegin(), end = removedOutputs.constEnd(); it != end; ++it) {
         const auto resources = (*it)->clientResources(client());
         for (wl_resource *r : resources) {
-            if (d->resource && r) {
-                wl_surface_send_leave(d->resource, r);
-            }
+            wl_surface_send_leave(d->resource, r);
         }
         disconnect(d->outputDestroyedConnections.take(*it));
     }
@@ -851,14 +844,12 @@ void SurfaceInterface::setOutputs(const QVector<OutputInterface *> &outputs)
         const auto o = *it;
         const auto resources = o->clientResources(client());
         for (wl_resource *r : resources) {
-            if (d->resource && r) {
-                wl_surface_send_enter(d->resource, r);
-            }
+            wl_surface_send_enter(d->resource, r);
         }
         d->outputDestroyedConnections[o] = connect(o, &Global::aboutToDestroyGlobal, this, [this, o] {
             Q_D();
             auto outputs = d->outputs;
-            if (outputs.removeAll(o)) {
+            if (outputs.removeOne(o)) {
                 setOutputs(outputs);
             }
         });

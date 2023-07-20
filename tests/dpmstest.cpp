@@ -66,29 +66,25 @@ static QLayout *setupOutput(Registry::AnnouncedInterface outputInterface, Regist
     QPushButton *standbyButton = new QPushButton(QStringLiteral("Standby"));
     QPushButton *suspendButton = new QPushButton(QStringLiteral("Suspend"));
     QPushButton *offButton = new QPushButton(QStringLiteral("Off"));
-    QPushButton *onButton = new QPushButton(QStringLiteral("On"));
     standbyButton->setEnabled(supported);
     suspendButton->setEnabled(supported);
     offButton->setEnabled(supported);
-    onButton->setEnabled(supported);
     QDialogButtonBox *bg = new QDialogButtonBox;
     bg->addButton(standbyButton, QDialogButtonBox::ActionRole);
     bg->addButton(suspendButton, QDialogButtonBox::ActionRole);
     bg->addButton(offButton, QDialogButtonBox::ActionRole);
-    bg->addButton(onButton, QDialogButtonBox::ActionRole);
 
     if (dpms) {
         QObject::connect(
             dpms,
             &Dpms::supportedChanged,
             supportedLabel,
-            [supportedLabel, dpms, standbyButton, suspendButton, offButton, onButton] {
+            [supportedLabel, dpms, standbyButton, suspendButton, offButton] {
                 const bool supported = dpms->isSupported();
                 supportedLabel->setText(supportedToString(supported));
                 standbyButton->setEnabled(supported);
                 suspendButton->setEnabled(supported);
                 offButton->setEnabled(supported);
-                onButton->setEnabled(supported);
             },
             Qt::QueuedConnection);
         QObject::connect(
@@ -108,8 +104,6 @@ static QLayout *setupOutput(Registry::AnnouncedInterface outputInterface, Regist
         QObject::connect(offButton, &QPushButton::clicked, dpms, [dpms] {
             dpms->requestMode(Dpms::Mode::Off);
         });
-        QObject::connect(onButton, &QPushButton::clicked, dpms, [dpms] {
-            dpms->requestMode(Dpms::Mode::On);});
     }
 
     QVBoxLayout *layout = new QVBoxLayout;

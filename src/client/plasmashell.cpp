@@ -239,6 +239,11 @@ void PlasmaShellSurface::setPosition(const QPoint &point)
     org_kde_plasma_surface_set_position(d->surface, point.x(), point.y());
 }
 
+void PlasmaShellSurface::openUnderCursor()
+{
+    org_kde_plasma_surface_open_under_cursor(d->surface);
+}
+
 void PlasmaShellSurface::setRole(PlasmaShellSurface::Role role)
 {
     Q_ASSERT(isValid());
@@ -270,14 +275,16 @@ void PlasmaShellSurface::setRole(PlasmaShellSurface::Role role)
             wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_CRITICALNOTIFICATION;
         }
         break;
-    case Role::StandAlone:
-        wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_STANDALONE;
-        break;
-    case Role::Override:
-        wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_OVERRIDE;
-        break;
-    case Role::ActiveFullScreen:
-        wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_ACTIVEFULLSCREEN;
+    case Role::AppletPopup:
+        // ORG_KDE_PLASMA_SURFACE_ROLE_APPLETPOPUP_SINCE_VERSION is not used for this check
+        // because it wrongly is 7 with old plasma wayland protocols
+        if (wl_proxy_get_version(d->surface) < 8) {
+            // dock is what applet popups were before
+            wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_PANEL;
+            setPanelBehavior(PanelBehavior::WindowsGoBelow);
+        } else {
+            wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_APPLETPOPUP;
+        }
         break;
     default:
         Q_UNREACHABLE();
