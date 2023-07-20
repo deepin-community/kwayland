@@ -10,7 +10,7 @@
 #include <QObject>
 #include <QSize>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct org_kde_plasma_activation_feedback;
 struct org_kde_plasma_activation;
@@ -296,13 +296,6 @@ public:
      * @see appIdChanged
      **/
     QString appId() const;
-
-    /**
-     * @returns the id of the window created
-     * @see windowIdCallback
-     **/
-    quint32 windowId() const;
-
 #if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 52)
     /**
      * @returns the id of the virtual desktop this PlasmaWindow is on
@@ -425,6 +418,12 @@ public:
      * @since 5.35
      */
     quint32 pid() const;
+    /**
+     * @returns The X11 resource name for this window.
+     * This is only set for X11 windows.
+     * @since 5.94
+     */
+    QString resourceName() const;
 
     /**
      * Requests to activate the window.
@@ -761,6 +760,13 @@ Q_SIGNALS:
      * @since 5.25
      **/
     void geometryChanged();
+
+    /**
+     * This signal is emitted whenever the resource name changes.
+     * @see resourceName
+     * @since 5.94
+     **/
+    void resourceNameChanged();
 
     /**
      * This signal is emitted when the window has entered a new virtual desktop.

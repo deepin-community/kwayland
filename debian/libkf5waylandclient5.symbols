@@ -284,6 +284,7 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZN8KWayland6Client12PlasmaWindow19minimizeableChangedEv@Base 4:5.4.0
  _ZN8KWayland6Client12PlasmaWindow19parentWindowChangedEv@Base 4:5.24.0
  _ZN8KWayland6Client12PlasmaWindow19requestToggleShadedEv@Base 4:5.22.0
+ _ZN8KWayland6Client12PlasmaWindow19resourceNameChangedEv@Base 4:5.94.0
  _ZN8KWayland6Client12PlasmaWindow19skipSwitcherChangedEv@Base 4:5.47.0
  _ZN8KWayland6Client12PlasmaWindow20onAllDesktopsChangedEv@Base 4:5.4.0
  _ZN8KWayland6Client12PlasmaWindow20requestEnterActivityERK7QString@Base 4:5.83.0
@@ -507,6 +508,23 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZN8KWayland6Client14AppMenuManagerD1Ev@Base 4:5.42.0
  _ZN8KWayland6Client14AppMenuManagerD2Ev@Base 4:5.42.0
  _ZN8KWayland6Client14AppMenuManagercvP28org_kde_kwin_appmenu_managerEv@Base 4:5.42.0
+ _ZN8KWayland6Client14XdgShellStable11qt_metacallEN11QMetaObject4CallEiPPv@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable11qt_metacastEPKc@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable16staticMetaObjectE@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private11getXdgPopupEPNS0_7SurfaceEPNS0_13XdgShellPopupERKNS0_13XdgPositionerEP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private11getXdgPopupEPNS0_7SurfaceEPNS0_15XdgShellSurfaceERKNS0_13XdgPositionerEP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private12pingCallbackEPvP11xdg_wm_basej@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private13getXdgSurfaceEPNS0_7SurfaceEP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private15s_shellListenerE@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private19internalGetXdgPopupEPNS0_7SurfaceEP11xdg_surfaceRKNS0_13XdgPositionerEP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private5setupEP11xdg_wm_base@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private7destroyEv@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStable7Private7releaseEv@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStableC1EP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStableC2EP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStableD0Ev@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStableD1Ev@Base 4:5.101.0
+ _ZN8KWayland6Client14XdgShellStableD2Ev@Base 4:5.101.0
  _ZN8KWayland6Client15ConfinedPointer10unconfinedEv@Base 4:5.35.0
  _ZN8KWayland6Client15ConfinedPointer11qt_metacallEN11QMetaObject4CallEiPPv@Base 4:5.35.0
  _ZN8KWayland6Client15ConfinedPointer11qt_metacastEPKc@Base 4:5.35.0
@@ -738,11 +756,45 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZN8KWayland6Client17PlasmaWindowModel22requestToggleKeepBelowEi@Base 4:5.35.0
  _ZN8KWayland6Client17PlasmaWindowModel22requestToggleMaximizedEi@Base 4:5.5.0
  _ZN8KWayland6Client17PlasmaWindowModel22requestToggleMinimizedEi@Base 4:5.5.0
+ _ZN8KWayland6Client17PlasmaWindowModel26requestEnterVirtualDesktopEiRK7QString@Base 4:5.92.0
  _ZN8KWayland6Client17PlasmaWindowModelC1EPNS0_22PlasmaWindowManagementE@Base 4:5.4.0
  _ZN8KWayland6Client17PlasmaWindowModelC2EPNS0_22PlasmaWindowManagementE@Base 4:5.4.0
  _ZN8KWayland6Client17PlasmaWindowModelD0Ev@Base 4:5.4.0
  _ZN8KWayland6Client17PlasmaWindowModelD1Ev@Base 4:5.4.0
  _ZN8KWayland6Client17PlasmaWindowModelD2Ev@Base 4:5.4.0
+ _ZN8KWayland6Client17XdgTopLevelStable11qt_metacallEN11QMetaObject4CallEiPPv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable11qt_metacastEPKc@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable16staticMetaObjectE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private10setMaxSizeERK5QSize@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private10setMinSizeERK5QSize@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private12ackConfigureEj@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private12setMaximizedEv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private12setMinimizedEv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private13closeCallbackEPvP12xdg_toplevel@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private13setFullscreenEPNS0_6OutputE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private14showWindowMenuEPNS0_4SeatEjii@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private14unsetMaximizedEv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private15setTransientForEPNS0_15XdgShellSurfaceE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private15unsetFullscreenEv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private17configureCallbackEPvP12xdg_topleveliiP8wl_array@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private17s_surfaceListenerE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private17setWindowGeometryERK5QRect@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private18s_toplevelListenerE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private24surfaceConfigureCallbackEPvP11xdg_surfacej@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private4moveEPNS0_4SeatEj@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private5setupEP11xdg_surfaceP12xdg_toplevel@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private6resizeEPNS0_4SeatEj6QFlagsIN2Qt4EdgeEE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private7destroyEv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private7releaseEv@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private8setAppIdERK10QByteArray@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7Private8setTitleERK7QString@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7PrivateC1EPNS0_15XdgShellSurfaceE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStable7PrivateC2EPNS0_15XdgShellSurfaceE@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStableC1EP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStableC2EP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStableD0Ev@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStableD1Ev@Base 4:5.101.0
+ _ZN8KWayland6Client17XdgTopLevelStableD2Ev@Base 4:5.101.0
  _ZN8KWayland6Client18IdleInhibitManager10eventQueueEv@Base 4:5.41.0
  _ZN8KWayland6Client18IdleInhibitManager11qt_metacallEN11QMetaObject4CallEiPPv@Base 4:5.41.0
  _ZN8KWayland6Client18IdleInhibitManager11qt_metacastEPKc@Base 4:5.41.0
@@ -763,6 +815,7 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZN8KWayland6Client18PlasmaShellSurface11qt_metacastEPKc@Base 4:5.4.0
  _ZN8KWayland6Client18PlasmaShellSurface11setPositionERK6QPoint@Base 4:5.4.0
  _ZN8KWayland6Client18PlasmaShellSurface14setSkipTaskbarEb@Base 4:5.5.0
+ _ZN8KWayland6Client18PlasmaShellSurface15openUnderCursorEv@Base 4:5.94.0
  _ZN8KWayland6Client18PlasmaShellSurface15setSkipSwitcherEb@Base 4:5.47.0
  _ZN8KWayland6Client18PlasmaShellSurface16setPanelBehaviorENS1_13PanelBehaviorE@Base 4:5.4.0
  _ZN8KWayland6Client18PlasmaShellSurface16staticMetaObjectE@Base 4:5.4.0
@@ -878,6 +931,24 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZN8KWayland6Client19RemoteAccessManagerD1Ev@Base 4:5.45.0
  _ZN8KWayland6Client19RemoteAccessManagerD2Ev@Base 4:5.45.0
  _ZN8KWayland6Client19RemoteAccessManagercvP34org_kde_kwin_remote_access_managerEv@Base 4:5.45.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private11requestGrabEPNS0_4SeatEj@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private12ackConfigureEj@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private15s_popupListenerE@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private17configureCallbackEPvP9xdg_popupiiii@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private17popupDoneCallbackEPvP9xdg_popup@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private17s_surfaceListenerE@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private17setWindowGeometryERK5QRect@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private24surfaceConfigureCallbackEPvP11xdg_surfacej@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private5setupEP11xdg_surfaceP9xdg_popup@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private7destroyEv@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7Private7releaseEv@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7PrivateC1EPNS0_13XdgShellPopupE@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStable7PrivateC2EPNS0_13XdgShellPopupE@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStableC1EP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStableC2EP7QObject@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStableD0Ev@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStableD1Ev@Base 4:5.101.0
+ _ZN8KWayland6Client19XdgShellPopupStableD2Ev@Base 4:5.101.0
  _ZN8KWayland6Client20PlasmaVirtualDesktop11deactivatedEv@Base 4:5.52.0
  _ZN8KWayland6Client20PlasmaVirtualDesktop11qt_metacallEN11QMetaObject4CallEiPPv@Base 4:5.52.0
  _ZN8KWayland6Client20PlasmaVirtualDesktop11qt_metacastEPKc@Base 4:5.52.0
@@ -1755,6 +1826,7 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZNK8KWayland6Client12PlasmaWindow11skipTaskbarEv@Base 4:5.5.0
  _ZNK8KWayland6Client12PlasmaWindow12isFullscreenEv@Base 4:5.4.0
  _ZNK8KWayland6Client12PlasmaWindow12parentWindowEv@Base 4:5.24.0
+ _ZNK8KWayland6Client12PlasmaWindow12resourceNameEv@Base 4:5.94.0
  _ZNK8KWayland6Client12PlasmaWindow12sendToOutputEPNS0_6OutputE@Base 4:5.90.0
  _ZNK8KWayland6Client12PlasmaWindow12skipSwitcherEv@Base 4:5.47.0
  _ZNK8KWayland6Client12PlasmaWindow14isMaximizeableEv@Base 4:5.4.0
@@ -1825,6 +1897,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZNK8KWayland6Client14AppMenuManager10metaObjectEv@Base 4:5.42.0
  _ZNK8KWayland6Client14AppMenuManager7isValidEv@Base 4:5.42.0
  _ZNK8KWayland6Client14AppMenuManagercvP28org_kde_kwin_appmenu_managerEv@Base 4:5.42.0
+ _ZNK8KWayland6Client14XdgShellStable10metaObjectEv@Base 4:5.101.0
+ _ZNK8KWayland6Client14XdgShellStable7Private7isValidEv@Base 4:5.101.0
  _ZNK8KWayland6Client15ConfinedPointer10metaObjectEv@Base 4:5.35.0
  _ZNK8KWayland6Client15ConfinedPointer7isValidEv@Base 4:5.35.0
  _ZNK8KWayland6Client15ConfinedPointercvP23zwp_confined_pointer_v1Ev@Base 4:5.35.0
@@ -1870,8 +1944,11 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZNK8KWayland6Client17PlasmaWindowModel10metaObjectEv@Base 4:5.4.0
  _ZNK8KWayland6Client17PlasmaWindowModel4dataERK11QModelIndexi@Base 4:5.4.0
  _ZNK8KWayland6Client17PlasmaWindowModel5indexEiiRK11QModelIndex@Base 4:5.4.0
+ _ZNK8KWayland6Client17PlasmaWindowModel8itemDataERK11QModelIndex@Base 4:5.96.0
  _ZNK8KWayland6Client17PlasmaWindowModel8rowCountERK11QModelIndex@Base 4:5.4.0
  _ZNK8KWayland6Client17PlasmaWindowModel9roleNamesEv@Base 4:5.4.0
+ _ZNK8KWayland6Client17XdgTopLevelStable10metaObjectEv@Base 4:5.101.0
+ _ZNK8KWayland6Client17XdgTopLevelStable7Private7isValidEv@Base 4:5.101.0
  _ZNK8KWayland6Client18IdleInhibitManager10metaObjectEv@Base 4:5.41.0
  _ZNK8KWayland6Client18IdleInhibitManager7isValidEv@Base 4:5.41.0
  _ZNK8KWayland6Client18IdleInhibitManagercvP27zwp_idle_inhibit_manager_v1Ev@Base 4:5.41.0
@@ -1898,6 +1975,7 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZNK8KWayland6Client19RemoteAccessManager10metaObjectEv@Base 4:5.45.0
  _ZNK8KWayland6Client19RemoteAccessManager7isValidEv@Base 4:5.45.0
  _ZNK8KWayland6Client19RemoteAccessManagercvP34org_kde_kwin_remote_access_managerEv@Base 4:5.45.0
+ _ZNK8KWayland6Client19XdgShellPopupStable7Private7isValidEv@Base 4:5.101.0
  _ZNK8KWayland6Client20PlasmaVirtualDesktop10metaObjectEv@Base 4:5.52.0
  _ZNK8KWayland6Client20PlasmaVirtualDesktop2idEv@Base 4:5.52.0
  _ZNK8KWayland6Client20PlasmaVirtualDesktop4nameEv@Base 4:5.52.0
@@ -1978,11 +2056,13 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZNK8KWayland6Client6BuffercvP9wl_bufferEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output10eventQueueEv@Base 4:5.5.0
  _ZNK8KWayland6Client6Output10metaObjectEv@Base 4:5.1.1+git20141128.0009
+ _ZNK8KWayland6Client6Output11descriptionEv@Base 4:5.99.0
  _ZNK8KWayland6Client6Output11refreshRateEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output12manufacturerEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output12physicalSizeEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output14globalPositionEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output4ModeeqERKS2_@Base 4:5.1.1+git20141128.0009
+ _ZNK8KWayland6Client6Output4nameEv@Base 4:5.99.0
  _ZNK8KWayland6Client6Output5modelEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output5modesEv@Base 4:5.1.1+git20141128.0009
  _ZNK8KWayland6Client6Output5scaleEv@Base 4:5.1.1+git20141128.0009
@@ -2133,6 +2213,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTIN8KWayland6Client13XdgDecorationE@Base 4:5.54.0
  _ZTIN8KWayland6Client13XdgShellPopupE@Base 4:5.25.0
  _ZTIN8KWayland6Client14AppMenuManagerE@Base 4:5.42.0
+ _ZTIN8KWayland6Client14XdgShellStable7PrivateE@Base 4:5.101.0
+ _ZTIN8KWayland6Client14XdgShellStableE@Base 4:5.101.0
  _ZTIN8KWayland6Client15ConfinedPointerE@Base 4:5.35.0
  _ZTIN8KWayland6Client15ContrastManagerE@Base 4:5.5.0
  _ZTIN8KWayland6Client15FullscreenShellE@Base 4:5.1.1+git20141128.0009
@@ -2146,6 +2228,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTIN8KWayland6Client16XdgOutputManagerE@Base 4:5.47.0
  _ZTIN8KWayland6Client17DataDeviceManagerE@Base 4:5.1.1+git20141128.0009
  _ZTIN8KWayland6Client17PlasmaWindowModelE@Base 4:5.4.0
+ _ZTIN8KWayland6Client17XdgTopLevelStable7PrivateE@Base 4:5.101.0
+ _ZTIN8KWayland6Client17XdgTopLevelStableE@Base 4:5.101.0
  _ZTIN8KWayland6Client18IdleInhibitManagerE@Base 4:5.41.0
  _ZTIN8KWayland6Client18PlasmaShellSurfaceE@Base 4:5.4.0
  _ZTIN8KWayland6Client18PointerConstraintsE@Base 4:5.35.0
@@ -2153,6 +2237,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTIN8KWayland6Client19PointerPinchGestureE@Base 4:5.35.0
  _ZTIN8KWayland6Client19PointerSwipeGestureE@Base 4:5.35.0
  _ZTIN8KWayland6Client19RemoteAccessManagerE@Base 4:5.45.0
+ _ZTIN8KWayland6Client19XdgShellPopupStable7PrivateE@Base 4:5.101.0
+ _ZTIN8KWayland6Client19XdgShellPopupStableE@Base 4:5.101.0
  _ZTIN8KWayland6Client20PlasmaVirtualDesktopE@Base 4:5.52.0
  _ZTIN8KWayland6Client20ServerSideDecorationE@Base 4:5.6.2
  _ZTIN8KWayland6Client20XdgDecorationManagerE@Base 4:5.54.0
@@ -2212,6 +2298,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTSN8KWayland6Client13XdgDecorationE@Base 4:5.54.0
  _ZTSN8KWayland6Client13XdgShellPopupE@Base 4:5.25.0
  _ZTSN8KWayland6Client14AppMenuManagerE@Base 4:5.42.0
+ _ZTSN8KWayland6Client14XdgShellStable7PrivateE@Base 4:5.101.0
+ _ZTSN8KWayland6Client14XdgShellStableE@Base 4:5.101.0
  _ZTSN8KWayland6Client15ConfinedPointerE@Base 4:5.35.0
  _ZTSN8KWayland6Client15ContrastManagerE@Base 4:5.5.0
  _ZTSN8KWayland6Client15FullscreenShellE@Base 4:5.1.1+git20141128.0009
@@ -2225,6 +2313,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTSN8KWayland6Client16XdgOutputManagerE@Base 4:5.47.0
  _ZTSN8KWayland6Client17DataDeviceManagerE@Base 4:5.1.1+git20141128.0009
  _ZTSN8KWayland6Client17PlasmaWindowModelE@Base 4:5.4.0
+ _ZTSN8KWayland6Client17XdgTopLevelStable7PrivateE@Base 4:5.101.0
+ _ZTSN8KWayland6Client17XdgTopLevelStableE@Base 4:5.101.0
  _ZTSN8KWayland6Client18IdleInhibitManagerE@Base 4:5.41.0
  _ZTSN8KWayland6Client18PlasmaShellSurfaceE@Base 4:5.4.0
  _ZTSN8KWayland6Client18PointerConstraintsE@Base 4:5.35.0
@@ -2232,6 +2322,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTSN8KWayland6Client19PointerPinchGestureE@Base 4:5.35.0
  _ZTSN8KWayland6Client19PointerSwipeGestureE@Base 4:5.35.0
  _ZTSN8KWayland6Client19RemoteAccessManagerE@Base 4:5.45.0
+ _ZTSN8KWayland6Client19XdgShellPopupStable7PrivateE@Base 4:5.101.0
+ _ZTSN8KWayland6Client19XdgShellPopupStableE@Base 4:5.101.0
  _ZTSN8KWayland6Client20PlasmaVirtualDesktopE@Base 4:5.52.0
  _ZTSN8KWayland6Client20ServerSideDecorationE@Base 4:5.6.2
  _ZTSN8KWayland6Client20XdgDecorationManagerE@Base 4:5.54.0
@@ -2291,6 +2383,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTVN8KWayland6Client13XdgDecorationE@Base 4:5.54.0
  _ZTVN8KWayland6Client13XdgShellPopupE@Base 4:5.25.0
  _ZTVN8KWayland6Client14AppMenuManagerE@Base 4:5.42.0
+ _ZTVN8KWayland6Client14XdgShellStable7PrivateE@Base 4:5.101.0
+ _ZTVN8KWayland6Client14XdgShellStableE@Base 4:5.101.0
  _ZTVN8KWayland6Client15ConfinedPointerE@Base 4:5.35.0
  _ZTVN8KWayland6Client15ContrastManagerE@Base 4:5.5.0
  _ZTVN8KWayland6Client15FullscreenShellE@Base 4:5.1.1+git20141128.0009
@@ -2304,6 +2398,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTVN8KWayland6Client16XdgOutputManagerE@Base 4:5.47.0
  _ZTVN8KWayland6Client17DataDeviceManagerE@Base 4:5.1.1+git20141128.0009
  _ZTVN8KWayland6Client17PlasmaWindowModelE@Base 4:5.4.0
+ _ZTVN8KWayland6Client17XdgTopLevelStable7PrivateE@Base 4:5.101.0
+ _ZTVN8KWayland6Client17XdgTopLevelStableE@Base 4:5.101.0
  _ZTVN8KWayland6Client18IdleInhibitManagerE@Base 4:5.41.0
  _ZTVN8KWayland6Client18PlasmaShellSurfaceE@Base 4:5.4.0
  _ZTVN8KWayland6Client18PointerConstraintsE@Base 4:5.35.0
@@ -2311,6 +2407,8 @@ libKF5WaylandClient.so.5 libkf5waylandclient5 #MINVER#
  _ZTVN8KWayland6Client19PointerPinchGestureE@Base 4:5.35.0
  _ZTVN8KWayland6Client19PointerSwipeGestureE@Base 4:5.35.0
  _ZTVN8KWayland6Client19RemoteAccessManagerE@Base 4:5.45.0
+ _ZTVN8KWayland6Client19XdgShellPopupStable7PrivateE@Base 4:5.101.0
+ _ZTVN8KWayland6Client19XdgShellPopupStableE@Base 4:5.101.0
  _ZTVN8KWayland6Client20PlasmaVirtualDesktopE@Base 4:5.52.0
  _ZTVN8KWayland6Client20ServerSideDecorationE@Base 4:5.6.2
  _ZTVN8KWayland6Client20XdgDecorationManagerE@Base 4:5.54.0

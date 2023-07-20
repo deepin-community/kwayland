@@ -10,7 +10,7 @@
 #include <QHash>
 #include <QObject>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct wl_compositor;
 struct wl_data_device_manager;
@@ -26,9 +26,7 @@ struct zwp_text_input_manager_v2;
 struct _wl_fullscreen_shell;
 struct org_kde_kwin_appmenu_manager;
 struct org_kde_kwin_outputmanagement;
-struct kde_output_management_v2;
 struct org_kde_kwin_outputdevice;
-struct kde_output_device_v2;
 struct org_kde_kwin_fake_input;
 struct org_kde_kwin_idle;
 struct org_kde_kwin_keystate;
@@ -55,10 +53,6 @@ struct zxdg_importer_v2;
 struct zwp_idle_inhibit_manager_v1;
 struct zxdg_output_manager_v1;
 struct zxdg_decoration_manager_v1;
-struct com_deepin_client_management;
-struct dde_seat;
-struct dde_shell;
-struct com_deepin_kwin_strut;
 
 namespace KWayland
 {
@@ -73,9 +67,7 @@ class EventQueue;
 class FakeInput;
 class FullscreenShell;
 class OutputManagement;
-class OutputManagementV2;
 class OutputDevice;
-class OutputDeviceV2;
 class Idle;
 class IdleInhibitManager;
 class Keystate;
@@ -108,10 +100,6 @@ class XdgExporter;
 class XdgImporter;
 class XdgOutputManager;
 class XdgDecorationManager;
-class ClientManagement;
-class DDESeat;
-class DDEShell;
-class Strut;
 
 /**
  * @short Wrapper for the wl_registry interface.
@@ -167,9 +155,7 @@ public:
         Slide, ///< refers to org_kde_kwin_slide_manager
         Dpms, ///< Refers to org_kde_kwin_dpms_manager interface
         OutputManagement, ///< Refers to the wl_data_device_manager interface
-        OutputManagementV2,
         OutputDevice, ///< Refers to the org_kde_kwin_outputdevice interface
-        OutputDeviceV2,
         ServerSideDecorationManager, ///< Refers to org_kde_kwin_server_decoration_manager
         TextInputManagerUnstableV0, ///< Refers to wl_text_input_manager @since 5.23
         TextInputManagerUnstableV2, ///< Refers to zwp_text_input_manager_v2 @since 5.23
@@ -190,10 +176,6 @@ public:
         XdgDecorationUnstableV1, ///< refers to zxdg_decoration_manager_v1 @since 5.54
         Keystate, ///< refers to org_kwin_keystate @since 5.60
         PlasmaActivationFeedback, ///< Refers to org_kde_plasma_activation_feedback interface, @since 5.83
-        ClientManagement,///refers to com_deepin_client_management, @since 5.83
-        DDESeat, ///refers to dde_shell, @since 5.54
-        DDEShell, ///<refers to dde_shell, @since 5.54
-        Strut, ///< refers to com_deepin_kwin_strut interface
     };
     explicit Registry(QObject *parent = nullptr);
     ~Registry() override;
@@ -351,9 +333,6 @@ public:
      * @see createOutputManagement
      **/
     org_kde_kwin_outputmanagement *bindOutputManagement(uint32_t name, uint32_t version) const;
-
-    kde_output_management_v2 *bindOutputManagementV2(uint32_t name, uint32_t version) const;
-
     /**
      * Binds the org_kde_kwin_outputdevice with @p name and @p version.
      * If the @p name does not exist or is not for the outputdevice interface,
@@ -382,8 +361,6 @@ public:
      * @since 5.5
      **/
     org_kde_kwin_outputdevice *bindOutputDevice(uint32_t name, uint32_t version) const;
-
-    kde_output_device_v2 *bindOutputDeviceV2(uint32_t name, uint32_t version) const;
 
     /**
      * Binds the _wl_fullscreen_shell with @p name and @p version.
@@ -700,49 +677,6 @@ public:
      **/
     zxdg_decoration_manager_v1 *bindXdgDecorationUnstableV1(uint32_t name, uint32_t version) const;
 
-    /**
-     * Binds the com_deepin_client_management with @p name and @p version.
-     * If the @p name does not exist,
-     * @c null will be returned.
-     *
-     * Prefer using createClientManagement instead.
-     * @see createClientManagement
-     * @since 5.83
-     **/
-    com_deepin_client_management *bindClientManagement(uint32_t name, uint32_t version) const;
-
-   /**
-     * Binds the dde_shell with @p name and @p version.
-     * If the @p name does not exist,
-     * @c null will be returned.
-     *
-     * Prefer using createDDEShell instead.
-     * @see createDDEShell
-     * @since 5.54
-     **/
-    dde_shell *bindDDEShell(uint32_t name, uint32_t version) const;
-
-    /**
-     * Binds the dde_shell with @p name and @p version.
-     * If the @p name does not exist,
-     * @c null will be returned.
-     *
-     * Prefer using createDDESeat instead.
-     * @see createDDESeat
-     * @since 5.54
-     **/
-    dde_seat *bindDDESeat(uint32_t name, uint32_t version) const;
-
-    /**
-     * Binds the com_deepin_kwin_strut with @p name and @p version.
-     * If the @p name does not exist or is not for the strut interface,
-     * @c null will be returned.
-     *
-     * Prefer using createStrut instead.
-     * @see createStrut
-     * @since 5.5
-     **/
-    com_deepin_kwin_strut *bindStrut(uint32_t name, uint32_t version) const;
     ///@}
 
     /**
@@ -855,9 +789,6 @@ public:
      * @since 5.5
      **/
     OutputManagement *createOutputManagement(quint32 name, quint32 version, QObject *parent = nullptr);
-
-    OutputManagementV2 *createOutputManagementV2(quint32 name, quint32 version, QObject *parent = nullptr);
-
     /**
      * Creates an OutputDevice and sets it up to manage the interface identified by
      * @p name and @p version.
@@ -874,9 +805,6 @@ public:
      * @since 5.5
      **/
     OutputDevice *createOutputDevice(quint32 name, quint32 version, QObject *parent = nullptr);
-
-    OutputDeviceV2 *createOutputDeviceV2(quint32 name, quint32 version, QObject *parent = nullptr);
-
     /**
      * Creates a FullscreenShell and sets it up to manage the interface identified by
      * @p name and @p version.
@@ -1337,74 +1265,6 @@ public:
      **/
     XdgDecorationManager *createXdgDecorationManager(quint32 name, quint32 version, QObject *parent = nullptr);
 
-    /**
-     * Creates an ClientManagement and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the zxdg_decoration_manager_v1 interface,
-     * the returned ClientManagement will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the zxdg_decoration_manager_v1 interface to bind
-     * @param version The version or the zxdg_decoration_manager_v1 interface to use
-     * @param parent The parent for ClientManagement
-     *
-     * @returns The created ClientManagement.
-     * @since 5.83
-     **/
-    ClientManagement *createClientManagement(quint32 name, quint32 version, QObject *parent = nullptr);
-
-    /**
-     * Creates an DDEShell and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the zxdg_decoration_manager_v1 interface,
-     * the returned DDEShell will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the zxdg_decoration_manager_v1 interface to bind
-     * @param version The version or the zxdg_decoration_manager_v1 interface to use
-     * @param parent The parent for DDEShell
-     *
-     * @returns The created DDEShell.
-     * @since 5.54
-     **/
-    DDEShell *createDDEShell(quint32 name, quint32 version, QObject *parent = nullptr);
-
-    /**
-     * Creates an DDESeat and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the zxdg_decoration_manager_v1 interface,
-     * the returned DDESeat will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the zxdg_decoration_manager_v1 interface to bind
-     * @param version The version or the zxdg_decoration_manager_v1 interface to use
-     * @param parent The parent for DDESeat
-     *
-     * @returns The created DDESeat.
-     * @since 5.54
-     **/
-    DDESeat *createDDESeat(quint32 name, quint32 version, QObject *parent = nullptr);
-
-    /**
-     * Creates a Strut and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the com_deepin_kwin_strut interface,
-     * the returned Strut will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the com_deepin_kwin_strut interface to bind
-     * @param version The version or the com_deepin_kwin_strut interface to use
-     * @param parent The parent for Strut
-     *
-     * @returns The created Strut.
-     * @since 5.5
-     **/
-    Strut *createStrut(quint32 name, quint32 version, QObject *parent = nullptr);
-
     ///@}
 
     /**
@@ -1475,9 +1335,6 @@ Q_SIGNALS:
     void dataDeviceManagerAnnounced(quint32 name, quint32 version);
 
     void outputManagementAnnounced(quint32 name, quint32 version);
-
-    void outputManagementV2Announced(quint32 name, quint32 version);
-
     /**
      * Emitted whenever a org_kde_kwin_outputdevice interface gets announced.
      * @param name The name for the announced interface
@@ -1485,9 +1342,6 @@ Q_SIGNALS:
      * @since 5.5
      **/
     void outputDeviceAnnounced(quint32 name, quint32 version);
-
-    void outputDeviceV2Announced(quint32 name, quint32 version);
-
     /**
      * Emitted whenever a org_kde_plasma_shell interface gets announced.
      * @param name The name for the announced interface
@@ -1702,38 +1556,6 @@ Q_SIGNALS:
      **/
     void keystateAnnounced(quint32 name, quint32 version);
 
-    /**
-     * Emitted whenever a com_deepin_client_management interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.83
-     **/
-    void clientManagementAnnounced(quint32 name, quint32 version);
-
-    /**
-     * Emitted whenever a dde_shell interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.54
-     **/
-    void ddeShellAnnounced(quint32 name, quint32 version);
-
-    /**
-     * Emitted whenever a dde_shell interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.54
-     **/
-    void ddeSeatAnnounced(quint32 name, quint32 version);
-
-    /**
-     * Emitted whenever a com_deepin_kwin_strut interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.5
-     **/
-    void strutAnnounced(quint32 name, quint32 version);
-
     ///@}
 
     /**
@@ -1786,18 +1608,12 @@ Q_SIGNALS:
      * @since 5.5
      **/
     void outputManagementRemoved(quint32 name);
-
-    void outputManagementV2Removed(quint32 name);
-
     /**
      * Emitted whenever a org_kde_kwin_outputdevice interface gets removed.
      * @param name The name for the removed interface
      * @since 5.5
      **/
     void outputDeviceRemoved(quint32 name);
-
-    void outputDeviceV2Removed(quint32 name);
-
     /**
      * Emitted whenever a org_kde_plasma_shell interface gets removed.
      * @param name The name for the removed interface
@@ -1980,29 +1796,6 @@ Q_SIGNALS:
      * @since 5.60
      **/
     void keystateRemoved(quint32 name);
-
-    /**
-     * Emitted whenever a com_deepin_client_management gets removed.
-     * @param name The name of the removed interface
-     * @since 5.83
-     **/
-    void clientManagementRemoved(quint32 name);
-
-    void ddeShellRemoved(quint32 name);
-
-    /**
-     * Emitted whenever a dde_shell gets removed.
-     * @param name The name of the removed interface
-     * @since 5.54
-     **/
-    void ddeSeatRemoved(quint32 name);
-
-    /**
-     * Emitted whenever a com_deepin_kwin_strut interface gets removed.
-     * @param name The name for the removed interface
-     * @since 5.5
-     **/
-    void strutRemoved(quint32 name);
 
     ///@}
     /**

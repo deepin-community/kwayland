@@ -119,10 +119,6 @@ public:
 
     static OutputInterface *get(wl_resource *native);
 
-    bool isOutputRemoved() const;
-    bool isOutputDisconnected() const;
-    void setOutputDisconnected(bool disconnected);
-
 Q_SIGNALS:
     void physicalSizeChanged(const QSize &);
     void globalPositionChanged(const QPoint &);
@@ -137,7 +133,6 @@ Q_SIGNALS:
     void currentModeChanged();
     void dpmsModeChanged();
     void dpmsSupportedChanged();
-    void resourceChanged();
 
     /**
      * Change of dpms @p mode is requested.

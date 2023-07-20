@@ -10,7 +10,6 @@
 #include "compositor_interface.h"
 #include "contrast_interface.h"
 #include "datadevicemanager_interface.h"
-#include "ddeshell_interface.h"
 #include "dpms_interface.h"
 #include "eglstream_controller_interface.h"
 #include "fakeinput_interface.h"
@@ -37,7 +36,6 @@
 #include "shadow_interface.h"
 #include "shell_interface.h"
 #include "slide_interface.h"
-#include "strut_interface.h"
 #include "subcompositor_interface.h"
 #include "tablet_interface.h"
 #include "textinput_interface_p.h"
@@ -47,8 +45,6 @@
 #include "xdgshell_stable_interface_p.h"
 #include "xdgshell_v5_interface_p.h"
 #include "xdgshell_v6_interface_p.h"
-#include "clientmanagement_interface.h"
-#include "ddeseat_interface.h"
 
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
@@ -614,34 +610,6 @@ TabletManagerInterface *Display::createTabletManagerInterface(QObject *parent)
         delete d;
     });
     return d;
-}
-
-ClientManagementInterface *Display::createClientManagement(QObject *parent)
-{
-    ClientManagementInterface *clientManagement = new ClientManagementInterface(this, parent);
-    connect(this, &Display::aboutToTerminate, clientManagement, [this,clientManagement] { delete clientManagement; });
-    return clientManagement;
-}
-
-DDEShellInterface *Display::createDDEShell(QObject *parent)
-{
-    auto b = new DDEShellInterface(this, parent);
-    connect(this, &Display::aboutToTerminate, b, [this, b] { delete b; });
-    return b;
-}
-
-DDESeatInterface *Display::createDDESeat(QObject *parent)
-{
-    auto b = new DDESeatInterface(this, parent);
-    connect(this, &Display::aboutToTerminate, b, [this, b] { delete b; });
-    return b;
-}
-
-StrutInterface *Display::createStrut(QObject* parent)
-{
-    auto s = new StrutInterface(this, parent);
-    connect(this, &Display::aboutToTerminate, s, [this, s] { delete s; });
-    return s;
 }
 
 void Display::createShm()

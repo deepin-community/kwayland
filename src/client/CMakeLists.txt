@@ -1,15 +1,15 @@
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
+remove_definitions(-DQT_NO_KEYWORDS)
 
 # needed to access QPA
-include_directories(SYSTEM ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
+include_directories(SYSTEM ${Qt${QT_MAJOR_VERSION}Gui_PRIVATE_INCLUDE_DIRS})
 
 set(CLIENT_LIB_SRCS
     appmenu.cpp
     buffer.cpp
     blur.cpp
-    clientmanagement.cpp
     compositor.cpp
     connection_thread.cpp
     contrast.cpp
@@ -19,9 +19,6 @@ set(CLIENT_LIB_SRCS
     datadevicemanager.cpp
     dataoffer.cpp
     datasource.cpp
-    ddeseat.cpp
-    ddekeyboard.cpp
-    ddeshell.cpp
     dpms.cpp
     fakeinput.cpp
     fullscreen_shell.cpp
@@ -31,12 +28,8 @@ set(CLIENT_LIB_SRCS
     keystate.cpp
     remote_access.cpp
     outputconfiguration.cpp
-    outputconfiguration_v2.cpp
     outputmanagement.cpp
-    outputmanagement_v2.cpp
     outputdevice.cpp
-    outputdevicemode_v2.cpp
-    outputdevice_v2.cpp
     output.cpp
     pointer.cpp
     pointerconstraints.cpp
@@ -54,7 +47,6 @@ set(CLIENT_LIB_SRCS
     shadow.cpp
     shell.cpp
     shm_pool.cpp
-    strut.cpp
     subcompositor.cpp
     subsurface.cpp
     surface.cpp
@@ -96,21 +88,6 @@ ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/outputdevice.xml
     BASENAME org_kde_kwin_outputdevice
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/kde-output-device-v2.xml
-    BASENAME kde-output-device-v2
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/kde-output-management-v2.xml
-    BASENAME kde-output-management-v2
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/kde-primary-output-v1.xml
-    BASENAME kde-primary-output-v1
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
@@ -227,26 +204,6 @@ ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     BASENAME keystate
 )
 
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/client-management.xml
-    BASENAME client-management
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/dde-seat.xml
-    BASENAME dde-seat
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/dde-shell.xml
-    BASENAME dde-shell
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/strut.xml
-    BASENAME strut
-)
-
 set(CLIENT_GENERATED_FILES
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-output-management-client-protocol.h
@@ -258,7 +215,6 @@ set(CLIENT_GENERATED_FILES
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-fake-input-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-shadow-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-blur-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-strut-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-contrast-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-slide-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-dpms-client-protocol.h
@@ -274,9 +230,6 @@ set(CLIENT_GENERATED_FILES
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-idle-inhibit-unstable-v1-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-output-unstable-v1-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-decoration-unstable-v1-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-client-management-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-dde-seat-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-dde-shell-client-protocol.h
 )
 
 set_source_files_properties(${CLIENT_GENERATED_FILES} PROPERTIES SKIP_AUTOMOC ON)
@@ -286,7 +239,10 @@ ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     BASENAME remote-access
 )
 
-add_library(KF5WaylandClient ${CLIENT_LIB_SRCS})
+set_source_files_properties(${CLIENT_LIB_SRCS} PROPERTIES
+    COMPILE_FLAGS -DQT_NO_KEYWORDS)
+
+add_library(KF5WaylandClient ${CLIENT_LIB_SRCS} surface_p.cpp)
 add_library(KF5::WaylandClient ALIAS KF5WaylandClient)
 ecm_generate_export_header(KF5WaylandClient
     BASE_NAME
@@ -297,32 +253,46 @@ ecm_generate_export_header(KF5WaylandClient
     VERSION ${KF_VERSION}
     DEPRECATED_BASE_VERSION 0
     DEPRECATION_VERSIONS 5.49 5.50 5.52 5.53 5.73 5.82
+    EXCLUDE_DEPRECATED_BEFORE_AND_AT ${EXCLUDE_DEPRECATED_BEFORE_AND_AT}
 )
-# TODO: add support for EXCLUDE_DEPRECATED_BEFORE_AND_AT to all KWayland libs
-# needs fixing of undeprecated API being still implemented using own deprecated API
 
+if (HAVE_MEMFD)
+    target_compile_definitions(KF5WaylandClient PRIVATE -DHAVE_MEMFD=1)
+else()
+    target_compile_definitions(KF5WaylandClient PRIVATE -DHAVE_MEMFD=0)
+endif()
 
-target_include_directories(KF5WaylandClient INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF5}/KWayland/Client>")
+target_include_directories(KF5WaylandClient
+    INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF}/KWayland>"
+)
 
 target_link_libraries(KF5WaylandClient
-    PUBLIC Qt5::Gui
+    PUBLIC Qt${QT_MAJOR_VERSION}::Gui
     PRIVATE Wayland::Client
-        Qt5::Concurrent
+        Qt${QT_MAJOR_VERSION}::Concurrent
+        Qt${QT_MAJOR_VERSION}::WaylandClientPrivate
 )
+
+if (QT_MAJOR_VERSION EQUAL "5")
+    target_link_libraries(KF5WaylandClient
+        PRIVATE
+            Qt::XkbCommonSupportPrivate
+            PkgConfig::XKBCommon
+    )
+endif()
 
 set_target_properties(KF5WaylandClient PROPERTIES VERSION   ${KWAYLAND_VERSION}
                                                  SOVERSION ${KWAYLAND_SOVERSION}
                                                  EXPORT_NAME WaylandClient
 )
 
-install(TARGETS KF5WaylandClient EXPORT KF5WaylandTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5WaylandClient EXPORT KF5WaylandTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 set(CLIENT_LIB_HEADERS
   ${CMAKE_CURRENT_BINARY_DIR}/KWayland/Client/kwaylandclient_export.h
   appmenu.h
   blur.h
   buffer.h
-  clientmanagement.h
   compositor.h
   connection_thread.h
   contrast.h
@@ -331,9 +301,6 @@ set(CLIENT_LIB_HEADERS
   datadevicemanager.h
   dataoffer.h
   datasource.h
-  ddeseat.h
-  ddekeyboard.h
-  ddeshell.h
   dpms.h
   fakeinput.h
   fullscreen_shell.h
@@ -343,12 +310,8 @@ set(CLIENT_LIB_HEADERS
   keystate.h
   remote_access.h
   outputconfiguration.h
-  outputconfiguration_v2.h
   outputmanagement.h
-  outputmanagement_v2.h
   outputdevice.h
-  outputdevice_v2.h
-  outputdevicemode_v2.h
   output.h
   pointer.h
   pointerconstraints.h
@@ -367,7 +330,6 @@ set(CLIENT_LIB_HEADERS
   shell.h
   shm_pool.h
   slide.h
-  strut.h
   subcompositor.h
   subsurface.h
   surface.h
@@ -381,7 +343,7 @@ set(CLIENT_LIB_HEADERS
 
 install(FILES
   ${CLIENT_LIB_HEADERS}
-  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF5}/KWayland/Client COMPONENT Devel
+  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KWayland/KWayland/Client COMPONENT Devel
 )
 
 # make available to ecm_add_qch in parent folder
@@ -389,6 +351,6 @@ set(KWaylandClient_APIDOX_SRCS ${CLIENT_LIB_HEADERS} PARENT_SCOPE)
 set(KWaylandClient_APIDOX_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
 include(ECMGeneratePriFile)
-ecm_generate_pri_file(BASE_NAME KWaylandClient LIB_NAME KF5WaylandClient DEPS "core" FILENAME_VAR PRI_FILENAME INCLUDE_INSTALL_DIR ${KDE_INSTALL_INCLUDEDIR_KF5})
+ecm_generate_pri_file(BASE_NAME KWaylandClient LIB_NAME KF5WaylandClient DEPS "core" FILENAME_VAR PRI_FILENAME INCLUDE_INSTALL_DIR ${KDE_INSTALL_INCLUDEDIR_KF}/KWayland)
 install(FILES ${PRI_FILENAME}
         DESTINATION ${ECM_MKSPECS_INSTALL_DIR})

@@ -23,7 +23,6 @@ public:
 
     OutputDeviceInterface::Enablement enabled;
     int modeId;
-    int brightness;
     OutputDeviceInterface::Transform transform;
     QPoint position;
     qreal scale;

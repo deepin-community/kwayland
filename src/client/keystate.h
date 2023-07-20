@@ -8,7 +8,7 @@
 
 #include <QObject>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct org_kde_kwin_keystate;
 
@@ -27,7 +27,7 @@ public:
         NumLock = 1,
         ScrollLock = 2,
     };
-    Q_ENUM(Key);
+    Q_ENUM(Key)
     enum State {
         Unlocked = 0,
         Latched = 1,

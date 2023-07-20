@@ -39,6 +39,7 @@ public:
     SubPixel subPixel = SubPixel::Unknown;
     Transform transform = Transform::Normal;
     Modes modes;
+    Modes::iterator currentMode = modes.end();
 
     QByteArray edid;
     OutputDevice::Enablement enabled = OutputDevice::Enablement::Enabled;
@@ -256,7 +257,10 @@ void OutputDevice::Private::addMode(uint32_t flags, int32_t width, int32_t heigh
     }
 
     // insert new mode after erase all repeat old mode
-    modes.insert(modes.end(), mode);
+    const auto last = modes.insert(modes.end(), mode);
+    if (flags & WL_OUTPUT_MODE_CURRENT) {
+        currentMode = last;
+    }
 
     if (existing) {
         Q_EMIT q->modeChanged(mode);
@@ -468,10 +472,10 @@ void OutputDevice::Private::setScale(qreal s)
 
 QRect OutputDevice::geometry() const
 {
-    if (currentMode() == Mode()) {
+    if (d->currentMode == d->modes.end()) {
         return QRect();
     }
-    return QRect(d->globalPosition, currentMode().size);
+    return QRect(d->globalPosition, pixelSize());
 }
 
 void OutputDevice::Private::setSubPixel(OutputDevice::SubPixel s)
@@ -521,18 +525,26 @@ QSize OutputDevice::physicalSize() const
 
 QSize OutputDevice::pixelSize() const
 {
-    return currentMode().size;
+    if (d->currentMode == d->modes.end()) {
+        return QSize();
+    }
+    return (*d->currentMode).size;
 }
 
 int OutputDevice::refreshRate() const
 {
-    return currentMode().refreshRate;
+    if (d->currentMode == d->modes.end()) {
+        return 0;
+    }
+    return (*d->currentMode).refreshRate;
 }
 
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 50)
 int OutputDevice::scale() const
 {
     return qRound(d->scale);
 }
+#endif
 
 qreal OutputDevice::scaleF() const
 {

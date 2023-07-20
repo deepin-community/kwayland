@@ -8,7 +8,7 @@
 
 #include <QObject>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct org_kde_kwin_fake_input;
 
@@ -156,10 +156,6 @@ public:
      * Request a scroll of the pointer @p axis with @p delta.
      **/
     void requestPointerAxis(Qt::Orientation axis, qreal delta);
-    /**
-     * Request a scroll of the pointer @p axis with @p delta.
-     **/
-    void requestPointerAxisForCapture(Qt::Orientation axis, qreal delta);
     /**
      * Request a touch down at @p pos in global coordinates.
      *

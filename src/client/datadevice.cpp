@@ -63,7 +63,6 @@ void DataDevice::Private::dataOffer(wl_data_offer *id)
     Q_ASSERT(!lastOffer);
     lastOffer = new DataOffer(q, id);
     Q_ASSERT(lastOffer->isValid());
-    Q_EMIT q->dataOffered(lastOffer);
 }
 
 void DataDevice::Private::enterCallback(void *data,

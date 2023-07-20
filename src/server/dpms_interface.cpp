@@ -6,7 +6,6 @@
 #include "display.h"
 #include "dpms_interface_p.h"
 #include "output_interface.h"
-#include <QDebug>
 
 namespace KWayland
 {
@@ -46,7 +45,6 @@ void DpmsManagerInterface::Private::getDpmsCallback(wl_client *client, wl_resour
         wl_resource_post_no_memory(resource);
         return;
     }
-    qDebug() << __func__ << "resource: " << resource;
     dpms->sendSupported();
     dpms->sendMode();
     dpms->sendDone();
@@ -89,11 +87,7 @@ void DpmsInterface::Private::setCallback(wl_client *client, wl_resource *resourc
     default:
         return;
     }
-    if (cast<Private>(resource) && cast<Private>(resource)->output) {
-        Q_EMIT cast<Private>(resource)->output->dpmsModeRequested(dpmsMode);
-    } else {
-        qDebug() << "skip dpmsModeRequested";
-    }
+    Q_EMIT cast<Private>(resource)->output->dpmsModeRequested(dpmsMode);
 }
 
 DpmsInterface::DpmsInterface(OutputInterface *output, wl_resource *parentResource, DpmsManagerInterface *manager)
@@ -104,9 +98,6 @@ DpmsInterface::DpmsInterface(OutputInterface *output, wl_resource *parentResourc
         sendDone();
     });
     connect(output, &OutputInterface::dpmsModeChanged, this, [this] {
-        qDebug() << "dpmsModeChanged" << "resource:" << this->d->resource;
-        if (!d->resource) return;
-
         sendMode();
         sendDone();
     });
@@ -141,15 +132,12 @@ void DpmsInterface::sendMode()
     default:
         Q_UNREACHABLE();
     }
-
-    if (d->resource)
-        org_kde_kwin_dpms_send_mode(d->resource, wlMode);
+    org_kde_kwin_dpms_send_mode(d->resource, wlMode);
 }
 
 void DpmsInterface::sendDone()
 {
     Q_D();
-    if (!d->resource) return;
     org_kde_kwin_dpms_send_done(d->resource);
     client()->flush();
 }

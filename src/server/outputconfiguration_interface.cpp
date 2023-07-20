@@ -51,7 +51,6 @@ private:
     static void colorcurvesCallback(wl_client *client, wl_resource *resource, wl_resource *outputdevice, wl_array *red, wl_array *green, wl_array *blue);
     static void overscanCallback(wl_client *client, wl_resource *resource, wl_resource *outputdevice, uint32_t overscan);
     static void vrrCallback(wl_client *client, wl_resource *resource, wl_resource *outputdevice, uint32_t vrrPolicy);
-    static void brightnessCallback(wl_client *client, wl_resource *resource, wl_resource * outputdevice, int32_t brightness);
 
     OutputConfigurationInterface *q_func()
     {
@@ -71,8 +70,7 @@ const struct org_kde_kwin_outputconfiguration_interface OutputConfigurationInter
                                                                                                               colorcurvesCallback,
                                                                                                               resourceDestroyedCallback,
                                                                                                               overscanCallback,
-                                                                                                              vrrCallback,
-                                                                                                              brightnessCallback};
+                                                                                                              vrrCallback};
 
 OutputConfigurationInterface::OutputConfigurationInterface(OutputManagementInterface *parent, wl_resource *parentResource)
     : Resource(new Private(this, parent, parentResource))
@@ -95,12 +93,6 @@ void OutputConfigurationInterface::Private::enableCallback(wl_client *client, wl
     auto _enable =
         (enable == ORG_KDE_KWIN_OUTPUTDEVICE_ENABLEMENT_ENABLED) ? OutputDeviceInterface::Enablement::Enabled : OutputDeviceInterface::Enablement::Disabled;
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
-
     s->pendingChanges(o)->d_func()->enabled = _enable;
 }
 
@@ -108,11 +100,6 @@ void OutputConfigurationInterface::Private::modeCallback(wl_client *client, wl_r
 {
     Q_UNUSED(client);
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
 
     bool modeValid = false;
     for (const auto &m : o->modes()) {
@@ -156,10 +143,6 @@ void OutputConfigurationInterface::Private::transformCallback(wl_client *client,
     };
     auto _transform = toTransform();
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
     auto s = cast<Private>(resource);
     Q_ASSERT(s);
     s->pendingChanges(o)->d_func()->transform = _transform;
@@ -170,10 +153,6 @@ void OutputConfigurationInterface::Private::positionCallback(wl_client *client, 
     Q_UNUSED(client);
     auto _pos = QPoint(x, y);
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
     auto s = cast<Private>(resource);
     Q_ASSERT(s);
     s->pendingChanges(o)->d_func()->position = _pos;
@@ -187,10 +166,6 @@ void OutputConfigurationInterface::Private::scaleCallback(wl_client *client, wl_
         return;
     }
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
     auto s = cast<Private>(resource);
     Q_ASSERT(s);
     s->pendingChanges(o)->d_func()->scale = scale;
@@ -206,10 +181,6 @@ void OutputConfigurationInterface::Private::scaleFCallback(wl_client *client, wl
         return;
     }
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
     auto s = cast<Private>(resource);
     Q_ASSERT(s);
 
@@ -233,10 +204,6 @@ void OutputConfigurationInterface::Private::colorcurvesCallback(wl_client *clien
 {
     Q_UNUSED(client);
     OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
     OutputDeviceInterface::ColorCurves oldCc = o->colorCurves();
 
     auto checkArg = [](const wl_array *newColor, const QVector<quint16> &oldColor) {
@@ -281,19 +248,6 @@ void OutputConfigurationInterface::Private::vrrCallback(wl_client *client, wl_re
     Q_UNUSED(resource);
     Q_UNUSED(outputdevice);
     Q_UNUSED(vrrPolicy);
-}
-
-void OutputConfigurationInterface::Private::brightnessCallback(wl_client *client, wl_resource *resource, wl_resource * outputdevice, int32_t brightness)
-{
-    Q_UNUSED(client);
-    OutputDeviceInterface *o = OutputDeviceInterface::get(outputdevice);
-    if (!o) {
-        qDebug() << "outputdevice is nullptr";
-        return;
-    }
-    auto s = cast<Private>(resource);
-    Q_ASSERT(s);
-    s->pendingChanges(o)->d_func()->brightness = brightness;
 }
 
 void OutputConfigurationInterface::Private::emitConfigurationChangeRequested() const
@@ -364,7 +318,7 @@ bool OutputConfigurationInterface::Private::hasPendingChanges(OutputDeviceInterf
         return false;
     }
     auto c = changes[outputdevice];
-    return c->enabledChanged() || c->modeChanged() || c->transformChanged() || c->positionChanged() || c->scaleChanged() || c->brightnessChanged();
+    return c->enabledChanged() || c->modeChanged() || c->transformChanged() || c->positionChanged() || c->scaleChanged();
 }
 
 void OutputConfigurationInterface::Private::clearPendingChanges()

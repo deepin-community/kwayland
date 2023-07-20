@@ -91,14 +91,15 @@ public:
     QStringList plasmaActivities;
     QRect geometry;
     quint32 pid = 0;
+    QString resourceName;
     QString applicationMenuServiceName;
     QString applicationMenuObjectPath;
-    quint32 windowId = 0;
 
 private:
     static void titleChangedCallback(void *data, org_kde_plasma_window *window, const char *title);
     static void appIdChangedCallback(void *data, org_kde_plasma_window *window, const char *app_id);
     static void pidChangedCallback(void *data, org_kde_plasma_window *window, uint32_t pid);
+    static void resourceNameChangedCallback(void *data, org_kde_plasma_window *window, const char *resourceName);
     static void stateChangedCallback(void *data, org_kde_plasma_window *window, uint32_t state);
     static void virtualDesktopChangedCallback(void *data, org_kde_plasma_window *window, int32_t number);
     static void themedIconNameChangedCallback(void *data, org_kde_plasma_window *window, const char *name);
@@ -112,7 +113,6 @@ private:
     static void appmenuChangedCallback(void *data, org_kde_plasma_window *org_kde_plasma_window, const char *service_name, const char *object_path);
     static void activityEnteredCallback(void *data, org_kde_plasma_window *org_kde_plasma_window, const char *id);
     static void activityLeftCallback(void *data, org_kde_plasma_window *org_kde_plasma_window, const char *id);
-    static void windowIdCallback(void *data, org_kde_plasma_window *window, uint32_t winid);
     void setActive(bool set);
     void setMinimized(bool set);
     void setMaximized(bool set);
@@ -239,20 +239,23 @@ void PlasmaWindowManagement::Private::windowCreated(org_kde_plasma_window *id, q
     PlasmaWindow *window = new PlasmaWindow(q, id, internalId, uuid);
     window->d->wm = q;
     windows << window;
-    QObject::connect(window, &QObject::destroyed, q, [this, window] {
+
+    const auto windowRemoved = [this, window] {
         windows.removeAll(window);
         if (activeWindow == window) {
             activeWindow = nullptr;
             Q_EMIT q->activeWindowChanged();
         }
-    });
-    QObject::connect(window, &PlasmaWindow::unmapped, q, [this, window] {
-        if (activeWindow == window) {
-            activeWindow = nullptr;
-            Q_EMIT q->activeWindowChanged();
-        }
-    });
+    };
+
+    QObject::connect(window, &QObject::destroyed, q, windowRemoved);
+    // unmapped is emitted earlier than QObject::destroyed. We want to update windows earlier to ensure other slot will see the up to date value of
+    // PlasmaWindowManagement::windows().
+    QObject::connect(window, &PlasmaWindow::unmapped, q, windowRemoved);
     QObject::connect(window, &PlasmaWindow::activeChanged, q, [this, window] {
+        if (window->d->unmapped) {
+            return;
+        }
         if (window->isActive()) {
             if (activeWindow == window) {
                 return;
@@ -270,12 +273,17 @@ void PlasmaWindowManagement::Private::windowCreated(org_kde_plasma_window *id, q
 
 void PlasmaWindowManagement::Private::stackingOrderCallback(void *data, org_kde_plasma_window_management *interface, wl_array *ids)
 {
+    // This is no-op since setStackingOrder(const QVector<quint32> &ids) is deprecated since 5.73,
+    // but we can't remove this method because it's needed in
+    // PlasmaWindowManagement::Private::s_listener struct
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
     auto wm = reinterpret_cast<PlasmaWindowManagement::Private *>(data);
     Q_ASSERT(wm->wm == interface);
     QVector<quint32> destination;
     destination.resize(ids->size / sizeof(uint32_t));
     memcpy(destination.data(), ids->data, ids->size);
     wm->setStackingOrder(destination);
+#endif
 }
 
 void PlasmaWindowManagement::Private::stackingOrderUuidsCallback(void *data, org_kde_plasma_window_management *interface, const char *uuids)
@@ -285,6 +293,7 @@ void PlasmaWindowManagement::Private::stackingOrderUuidsCallback(void *data, org
     wm->setStackingOrder(QByteArray(uuids).split(';').toVector());
 }
 
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
 void PlasmaWindowManagement::Private::setStackingOrder(const QVector<quint32> &ids)
 {
     if (stackingOrder == ids) {
@@ -293,6 +302,7 @@ void PlasmaWindowManagement::Private::setStackingOrder(const QVector<quint32> &i
     stackingOrder = ids;
     Q_EMIT q->stackingOrderChanged();
 }
+#endif
 
 void PlasmaWindowManagement::Private::setStackingOrder(const QVector<QByteArray> &uuids)
 {
@@ -399,10 +409,12 @@ PlasmaWindowModel *PlasmaWindowManagement::createWindowModel()
     return new PlasmaWindowModel(this);
 }
 
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
 QVector<quint32> PlasmaWindowManagement::stackingOrder() const
 {
     return d->stackingOrder;
 }
+#endif
 
 QVector<QByteArray> PlasmaWindowManagement::stackingOrderUuids() const
 {
@@ -426,7 +438,7 @@ org_kde_plasma_window_listener PlasmaWindow::Private::s_listener = {
     appmenuChangedCallback,
     activityEnteredCallback,
     activityLeftCallback,
-    windowIdCallback,
+    resourceNameChangedCallback,
 };
 
 void PlasmaWindow::Private::appmenuChangedCallback(void *data, org_kde_plasma_window *window, const char *service_name, const char *object_path)
@@ -525,8 +537,24 @@ void PlasmaWindow::Private::pidChangedCallback(void *data, org_kde_plasma_window
     p->pid = pid;
 }
 
-void PlasmaWindow::Private::virtualDesktopChangedCallback(void *data, org_kde_plasma_window *window, int32_t number)
+void PlasmaWindow::Private::resourceNameChangedCallback(void *data, org_kde_plasma_window *window, const char *resourceName)
 {
+    Q_UNUSED(window)
+    Private *p = cast(data);
+    const QString s = QString::fromUtf8(resourceName);
+    if (s == p->resourceName) {
+        return;
+    }
+    p->resourceName = s;
+    Q_EMIT p->q->resourceNameChanged();
+}
+
+void PlasmaWindow::Private::virtualDesktopChangedCallback([[maybe_unused]] void *data,
+                                                          [[maybe_unused]] org_kde_plasma_window *window,
+                                                          [[maybe_unused]] int32_t number)
+{
+    // Can't remove this method as it's used in PlasmaWindow::Private::s_listener struct
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
     Q_UNUSED(window)
     Private *p = cast(data);
     if (p->desktop == static_cast<quint32>(number)) {
@@ -534,6 +562,7 @@ void PlasmaWindow::Private::virtualDesktopChangedCallback(void *data, org_kde_pl
     }
     p->desktop = number;
     Q_EMIT p->q->virtualDesktopChanged();
+#endif
 }
 
 void PlasmaWindow::Private::unmappedCallback(void *data, org_kde_plasma_window *window)
@@ -587,13 +616,6 @@ void PlasmaWindow::Private::activityLeftCallback(void *data, org_kde_plasma_wind
     Q_EMIT p->q->plasmaActivityLeft(stringId);
 }
 
-void PlasmaWindow::Private::windowIdCallback(void *data, org_kde_plasma_window *window, uint32_t winid)
-{
-    Q_UNUSED(window)
-    Private *p = cast(data);
-    p->windowId = winid;
-}
-
 void PlasmaWindow::Private::stateChangedCallback(void *data, org_kde_plasma_window *window, uint32_t state)
 {
     auto p = cast(data);
@@ -641,15 +663,13 @@ static int readData(int fd, QByteArray &data)
     int n;
     while (true) {
         n = QT_READ(fd, buf, sizeof buf);
-        if (n == -1 && (errno == EAGAIN) && ++retryCount < 1000) {
+        if (n > 0) {
+            data.append(buf, n);
+        } else if (n == -1 && (errno == EAGAIN) && ++retryCount < 1000) {
             usleep(1000);
         } else {
             break;
         }
-    }
-    if (n > 0) {
-        data.append(buf, n);
-        n = readData(fd, data);
     }
     return n;
 }
@@ -918,20 +938,22 @@ quint32 PlasmaWindow::pid() const
     return d->pid;
 }
 
+QString PlasmaWindow::resourceName() const
+{
+    return d->resourceName;
+}
+
 QString PlasmaWindow::title() const
 {
     return d->title;
 }
 
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
 quint32 PlasmaWindow::virtualDesktop() const
 {
     return d->desktop;
 }
-
-quint32 PlasmaWindow::windowId() const
-{
-    return d->windowId;
-}
+#endif
 
 bool PlasmaWindow::isActive() const
 {
@@ -1068,10 +1090,12 @@ void PlasmaWindow::requestResize()
     org_kde_plasma_window_request_resize(d->window);
 }
 
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
 void PlasmaWindow::requestVirtualDesktop(quint32 desktop)
 {
     org_kde_plasma_window_set_virtual_desktop(d->window, desktop);
 }
+#endif
 
 void PlasmaWindow::requestToggleKeepAbove()
 {
@@ -1128,10 +1152,12 @@ void PlasmaWindow::requestToggleShaded()
     }
 }
 
+#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
 quint32 PlasmaWindow::internalId() const
 {
     return d->internalId;
 }
+#endif
 
 QByteArray PlasmaWindow::uuid() const
 {

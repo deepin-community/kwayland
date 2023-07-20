@@ -106,7 +106,6 @@ public:
     ColorCurves colorCurves() const;
     QList<Mode> modes() const;
     int currentModeId() const;
-    int brightness() const;
 
     QByteArray edid() const;
     OutputDeviceInterface::Enablement enabled() const;

@@ -51,7 +51,6 @@ public:
     QString manufacturer = QStringLiteral("org.kde.kwin");
     QString model = QStringLiteral("none");
     qreal scale = 1.0;
-    int brightness = 60;
     QString serialNumber;
     QString eisaId;
     SubPixel subPixel = SubPixel::Unknown;
@@ -212,7 +211,7 @@ void OutputDeviceInterface::addMode(Mode &mode)
     }
 
     auto existingModeIt = std::find_if(d->modes.begin(), d->modes.end(), [mode](const Mode &mode_it) {
-        return mode.size == mode_it.size && mode.refreshRate == mode_it.refreshRate;
+        return mode.size == mode_it.size && mode.refreshRate == mode_it.refreshRate && mode.id == mode_it.id;
     });
     auto emitChanges = [this, d, mode] {
         Q_EMIT modesChanged();
@@ -224,12 +223,10 @@ void OutputDeviceInterface::addMode(Mode &mode)
         }
     };
     if (existingModeIt != d->modes.end()) {
-        if ((*existingModeIt).flags == mode.flags ||
-            (*existingModeIt).flags.testFlag(ModeFlag::Current)) {
-            // no need to replace
+        if ((*existingModeIt).flags == mode.flags) {
+            // nothing to do
             return;
         }
-
         (*existingModeIt).flags = mode.flags;
         emitChanges();
         return;
@@ -610,12 +607,6 @@ int OutputDeviceInterface::currentModeId() const
         }
     }
     return -1;
-}
-
-int OutputDeviceInterface::brightness() const
-{
-    Q_D();
-    return d->brightness;
 }
 
 OutputDeviceInterface::Private *OutputDeviceInterface::d_func() const

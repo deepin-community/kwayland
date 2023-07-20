@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QSize>
 
-#include <KWayland/Client/kwaylandclient_export.h>
+#include "KWayland/Client/kwaylandclient_export.h"
 
 struct wl_surface;
 struct org_kde_plasma_shell;
@@ -234,9 +234,7 @@ public:
         Notification, ///< The Surface represents a notification @since 5.24
         ToolTip, ///< The Surface represents a tooltip @since 5.24
         CriticalNotification, ///< The Surface represents a critical notification, like battery is running out @since 5.58
-        StandAlone, ///< The Surface represents a special surface which the same as normal surface but can not be move/resize by window manager
-        Override, ///< The Surface represents a special surface which unmanaged by wm
-        ActiveFullScreen, // The surfce used for wallpaper
+        AppletPopup, ///< The Surface used for applets
     };
     /**
      * Changes the requested Role to @p role.
@@ -252,6 +250,14 @@ public:
      * Requests to position this PlasmaShellSurface at @p point in global coordinates.
      **/
     void setPosition(const QPoint &point);
+
+    /**
+     * Request that the initial position of this surface will be under the cursor
+     *
+     * Has to be called before attaching any buffer to the corresponding surface.
+     * @since 5.94
+     **/
+    void openUnderCursor();
 
     /**
      * Describes how a PlasmaShellSurface with role @c Role::Panel should behave.

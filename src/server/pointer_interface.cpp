@@ -243,12 +243,6 @@ PointerInterface::PointerInterface(SeatInterface *parent, wl_resource *parentRes
 
 PointerInterface::~PointerInterface() = default;
 
-SurfaceInterface *PointerInterface::focusedSurface() const
-{
-    Q_D();
-    return d->focusedSurface;
-}
-
 void PointerInterface::setFocusedSurface(SurfaceInterface *surface, quint32 serial)
 {
     Q_D();
@@ -269,36 +263,6 @@ void PointerInterface::setFocusedSurface(SurfaceInterface *surface, quint32 seri
     });
 
     const QPointF pos = d->seat->focusedPointerSurfaceTransformation().map(d->seat->pointerPos());
-    d->focusedChildSurface = QPointer<SurfaceInterface>(d->focusedSurface->inputSurfaceAt(pos));
-    if (!d->focusedChildSurface) {
-        d->focusedChildSurface = QPointer<SurfaceInterface>(d->focusedSurface);
-    }
-    d->sendEnter(d->focusedChildSurface.data(), pos, serial);
-    d->client->flush();
-}
-
-void PointerInterface::setFocusedSurface(SurfaceInterface *surface, quint32 serial, QMatrix4x4 matrix)
-{
-    Q_D();
-    d->sendLeave(d->focusedChildSurface.data(), serial);
-    disconnect(d->destroyConnection);
-    if (!surface) {
-        d->focusedSurface = nullptr;
-        d->focusedChildSurface.clear();
-        return;
-    }
-    d->focusedSurface = surface;
-    d->destroyConnection = connect(d->focusedSurface, &Resource::aboutToBeUnbound, this,
-        [this] {
-            Q_D();
-            d->sendLeave(d->focusedChildSurface.data(), d->global->display()->nextSerial());
-            d->sendFrame();
-            d->focusedSurface = nullptr;
-            d->focusedChildSurface.clear();
-        }
-    );
-
-    const QPointF pos = matrix.map(d->seat->pointerPos());
     d->focusedChildSurface = QPointer<SurfaceInterface>(d->focusedSurface->inputSurfaceAt(pos));
     if (!d->focusedChildSurface) {
         d->focusedChildSurface = QPointer<SurfaceInterface>(d->focusedSurface);
@@ -372,20 +336,6 @@ void PointerInterface::axis(Qt::Orientation orientation, qreal delta, qint32 dis
         wl_pointer_send_axis_stop(d->resource, d->seat->timestamp(), wlOrientation);
     }
 
-    d->sendFrame();
-}
-
-void PointerInterface::axis(Qt::Orientation orientation, qint32 delta)
-{
-    Q_D();
-    Q_ASSERT(d->focusedSurface);
-    if (!d->resource) {
-        return;
-    }
-    wl_pointer_send_axis(d->resource,
-                         d->seat->timestamp(),
-                         (orientation == Qt::Vertical) ? WL_POINTER_AXIS_VERTICAL_SCROLL : WL_POINTER_AXIS_HORIZONTAL_SCROLL,
-                         wl_fixed_from_int(delta));
     d->sendFrame();
 }
 

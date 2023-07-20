@@ -22,9 +22,7 @@
 #include "output.h"
 #include "outputconfiguration.h"
 #include "outputdevice.h"
-#include "outputdevice_v2.h"
 #include "outputmanagement.h"
-#include "outputmanagement_v2.h"
 #include "plasmashell.h"
 #include "plasmavirtualdesktop.h"
 #include "plasmawindowmanagement.h"
@@ -47,10 +45,6 @@
 #include "xdgoutput.h"
 #include "xdgshell.h"
 #include "xdgshell_p.h"
-#include "clientmanagement.h"
-#include "ddeseat.h"
-#include "ddeshell.h"
-#include "strut.h"
 // Qt
 #include <QDebug>
 // wayland
@@ -66,9 +60,7 @@
 #include <wayland-idle-inhibit-unstable-v1-client-protocol.h>
 #include <wayland-keystate-client-protocol.h>
 #include <wayland-org_kde_kwin_outputdevice-client-protocol.h>
-#include <wayland-kde-output-device-v2-client-protocol.h>
 #include <wayland-output-management-client-protocol.h>
-#include "wayland-kde-output-management-v2-client-protocol.h"
 #include <wayland-plasma-shell-client-protocol.h>
 #include <wayland-plasma-virtual-desktop-client-protocol.h>
 #include <wayland-plasma-window-management-client-protocol.h>
@@ -87,10 +79,6 @@
 #include <wayland-xdg-output-unstable-v1-client-protocol.h>
 #include <wayland-xdg-shell-client-protocol.h>
 #include <wayland-xdg-shell-v6-client-protocol.h>
-#include <wayland-client-management-client-protocol.h>
-#include <wayland-dde-seat-client-protocol.h>
-#include <wayland-dde-shell-client-protocol.h>
-#include <wayland-strut-client-protocol.h>
 
 /*****
  * How to add another interface:
@@ -135,7 +123,7 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::dataDeviceManagerRemoved
     }},
     {Registry::Interface::Output, {
-        3,
+        4,
         QByteArrayLiteral("wl_output"),
         &wl_output_interface,
         &Registry::outputAnnounced,
@@ -170,7 +158,7 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::subCompositorRemoved
     }},
     {Registry::Interface::PlasmaShell, {
-        6,
+        8,
         QByteArrayLiteral("org_kde_plasma_shell"),
         &org_kde_plasma_shell_interface,
         &Registry::plasmaShellAnnounced,
@@ -184,7 +172,7 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::plasmaVirtualDesktopManagementRemoved
     }},
     {Registry::Interface::PlasmaWindowManagement, {
-        15,
+        16,
         QByteArrayLiteral("org_kde_plasma_window_management"),
         &org_kde_plasma_window_management_interface,
         &Registry::plasmaWindowManagementAnnounced,
@@ -218,26 +206,12 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::outputManagementAnnounced,
         &Registry::outputManagementRemoved
     }},
-    {Registry::Interface::OutputManagementV2, {
-        2,
-        QByteArrayLiteral("kde_output_management_v2"),
-        &kde_output_management_v2_interface,
-        &Registry::outputManagementV2Announced,
-        &Registry::outputManagementV2Removed
-    }},
     {Registry::Interface::OutputDevice, {
         4,
         QByteArrayLiteral("org_kde_kwin_outputdevice"),
         &org_kde_kwin_outputdevice_interface,
         &Registry::outputDeviceAnnounced,
         &Registry::outputDeviceRemoved
-    }},
-    {Registry::Interface::OutputDeviceV2, {
-        2,
-        QByteArrayLiteral("kde_output_device_v2"),
-        &kde_output_device_v2_interface,
-        &Registry::outputDeviceV2Announced,
-        &Registry::outputDeviceV2Removed
     }},
     {Registry::Interface::Shadow, {
         2,
@@ -406,34 +380,6 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &org_kde_plasma_activation_feedback_interface,
         &Registry::plasmaActivationFeedbackAnnounced,
         &Registry::plasmaActivationFeedbackRemoved
-    }},
-    {Registry::Interface::ClientManagement, {
-        1,
-        QByteArrayLiteral("com_deepin_client_management"),
-        &com_deepin_client_management_interface,
-        &Registry::clientManagementAnnounced,
-        &Registry::clientManagementRemoved
-    }},
-    {Registry::Interface::DDEShell, {
-        1,
-        QByteArrayLiteral("dde_shell"),
-        &dde_shell_interface,
-        &Registry::ddeShellAnnounced,
-        &Registry::ddeShellRemoved
-    }},
-    {Registry::Interface::DDESeat, {
-        1,
-        QByteArrayLiteral("dde_seat"),
-        &dde_seat_interface,
-        &Registry::ddeSeatAnnounced,
-        &Registry::ddeSeatRemoved
-    }},
-    {Registry::Interface::Strut, {
-        1,
-        QByteArrayLiteral("com_deepin_kwin_strut"),
-        &com_deepin_kwin_strut_interface,
-        &Registry::strutAnnounced,
-        &Registry::strutRemoved
     }},
 };
 // clang-format on
@@ -723,9 +669,7 @@ BIND(Idle, org_kde_kwin_idle)
 BIND(RemoteAccessManager, org_kde_kwin_remote_access_manager)
 BIND(FakeInput, org_kde_kwin_fake_input)
 BIND(OutputManagement, org_kde_kwin_outputmanagement)
-BIND(OutputManagementV2, kde_output_management_v2)
 BIND(OutputDevice, org_kde_kwin_outputdevice)
-BIND(OutputDeviceV2, kde_output_device_v2)
 BIND(ServerSideDecorationManager, org_kde_kwin_server_decoration_manager)
 BIND(TextInputManagerUnstableV0, wl_text_input_manager)
 BIND(TextInputManagerUnstableV2, zwp_text_input_manager_v2)
@@ -748,10 +692,6 @@ BIND2(AppMenuManager, AppMenu, org_kde_kwin_appmenu_manager)
 BIND2(ServerSideDecorationPaletteManager, ServerSideDecorationPalette, org_kde_kwin_server_decoration_palette_manager)
 BIND(XdgOutputUnstableV1, zxdg_output_manager_v1)
 BIND(XdgDecorationUnstableV1, zxdg_decoration_manager_v1)
-BIND(ClientManagement, com_deepin_client_management)
-BIND(DDESeat, dde_seat)
-BIND(DDEShell, dde_shell)
-BIND(Strut, com_deepin_kwin_strut)
 
 #undef BIND
 #undef BIND2
@@ -796,9 +736,7 @@ CREATE(Idle)
 CREATE(RemoteAccessManager)
 CREATE(FakeInput)
 CREATE(OutputManagement)
-CREATE(OutputManagementV2)
 CREATE(OutputDevice)
-CREATE(OutputDeviceV2)
 CREATE(ShadowManager)
 CREATE(BlurManager)
 CREATE(ContrastManager)
@@ -809,10 +747,6 @@ CREATE2(ShmPool, Shm)
 CREATE(AppMenuManager)
 CREATE(Keystate)
 CREATE(ServerSideDecorationPaletteManager)
-CREATE(ClientManagement)
-CREATE(DDESeat)
-CREATE(DDEShell)
-CREATE(Strut)
 
 #undef CREATE
 #undef CREATE2

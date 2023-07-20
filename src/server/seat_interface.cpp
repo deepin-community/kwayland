@@ -22,7 +22,6 @@
 #include <linux/input.h>
 
 #include <functional>
-#include <unistd.h>
 
 namespace KWayland
 {
@@ -255,14 +254,10 @@ void SeatInterface::Private::registerDataDevice(DataDeviceInterface *dataDevice)
     QObject::connect(dataDevice, &QObject::destroyed, q, dataDeviceCleanup);
     QObject::connect(dataDevice, &Resource::unbound, q, dataDeviceCleanup);
     QObject::connect(dataDevice, &DataDeviceInterface::selectionChanged, q, [this, dataDevice] {
-        if (keys.focus.surface && dataDevice && dataDevice->client() == keys.focus.surface->client()) {
-            updateSelection(dataDevice, true);
-        }
+        updateSelection(dataDevice, true);
     });
     QObject::connect(dataDevice, &DataDeviceInterface::selectionCleared, q, [this, dataDevice] {
-        if (keys.focus.surface && dataDevice && dataDevice->client() == keys.focus.surface->client()) {
-            updateSelection(dataDevice, false);
-        }
+        updateSelection(dataDevice, false);
     });
     QObject::connect(dataDevice, &DataDeviceInterface::dragStarted, q, [this, dataDevice] {
         const auto dragSerial = dataDevice->dragImplicitGrabSerial();
@@ -644,10 +639,8 @@ void SeatInterface::setDragTarget(SurfaceInterface *surface, const QMatrix4x4 &i
     if (d->drag.mode == Private::Drag::Mode::Pointer) {
         setDragTarget(surface, pointerPos(), inputTransformation);
     } else {
-        // Q_ASSERT(d->drag.mode == Private::Drag::Mode::Touch);
-        if (d->drag.mode == Private::Drag::Mode::Touch) {
-            setDragTarget(surface, d->globalTouch.focus.firstTouchPos, inputTransformation);
-        }
+        Q_ASSERT(d->drag.mode == Private::Drag::Mode::Touch);
+        setDragTarget(surface, d->globalTouch.focus.firstTouchPos, inputTransformation);
     }
 }
 
@@ -700,7 +693,7 @@ void SeatInterface::setFocusedPointerSurface(SurfaceInterface *surface, const QM
     }
     if (p.isEmpty()) {
         Q_EMIT focusedPointerChanged(nullptr);
-        for (auto p : qAsConst(framePointers)) {
+        for (auto p : std::as_const(framePointers)) {
             p->d_func()->sendFrame();
         }
         return;
@@ -711,7 +704,7 @@ void SeatInterface::setFocusedPointerSurface(SurfaceInterface *surface, const QM
         (*it)->setFocusedSurface(surface, serial);
         framePointers << *it;
     }
-    for (auto p : qAsConst(framePointers)) {
+    for (auto p : std::as_const(framePointers)) {
         p->d_func()->sendFrame();
     }
 }
@@ -811,20 +804,6 @@ void SeatInterface::pointerAxisV5(Qt::Orientation orientation, qreal delta, qint
     }
 }
 
-void SeatInterface::pointerAxis(Qt::Orientation orientation, qint32 delta)
-{
-    Q_D();
-    if (d->drag.mode == Private::Drag::Mode::Pointer) {
-        // ignore
-        return;
-    }
-    if (d->globalPointer.focus.surface) {
-        for (auto it = d->globalPointer.focus.pointers.constBegin(), end = d->globalPointer.focus.pointers.constEnd(); it != end; ++it) {
-            (*it)->axis(orientation, delta);
-        }
-    }
-}
-
 void SeatInterface::pointerAxis(Qt::Orientation orientation, quint32 delta)
 {
     Q_D();
@@ -835,32 +814,6 @@ void SeatInterface::pointerAxis(Qt::Orientation orientation, quint32 delta)
     if (d->globalPointer.focus.surface) {
         for (auto it = d->globalPointer.focus.pointers.constBegin(), end = d->globalPointer.focus.pointers.constEnd(); it != end; ++it) {
             (*it)->axis(orientation, delta);
-        }
-    }
-}
-
-void SeatInterface::pointerAxisToClient(Qt::Orientation orientation, qint32 delta, SurfaceInterface * surface, QMatrix4x4 matrix)
-{
-    Q_D();
-    if (d->drag.mode == Private::Drag::Mode::Pointer) {
-        // ignore
-        return;
-    }
-    if (!surface) {
-        return;
-    }
-    const quint32 serial = d->display->nextSerial();
-    QVector<PointerInterface *> targetPoints =  d->pointersForSurface(surface);
-    for (auto it = targetPoints.constBegin(), end = targetPoints.constEnd(); it != end; it) {
-        SurfaceInterface * sur = (*it)->focusedSurface();
-        if (sur != surface) {
-            (*it)->setFocusedSurface(surface, serial, matrix);
-        }
-        (*it)->axis(orientation, delta);
-        (*it)->client()->flush();
-        usleep(10000);
-        if ((*it) != focusedPointer()) {
-            (*it)->setFocusedSurface(nullptr, serial, matrix);
         }
     }
 }
