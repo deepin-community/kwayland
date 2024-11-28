@@ -24,8 +24,9 @@ namespace KWayland
 {
 namespace Client
 {
-class Q_DECL_HIDDEN PlasmaWindowManagement::Private
+class Q_DECL_HIDDEN PlasmaWindowManagement::Private : public QObject
 {
+    Q_OBJECT
 public:
     Private(PlasmaWindowManagement *q);
     WaylandPointer<org_kde_plasma_window_management, org_kde_plasma_window_management_destroy> wm;
@@ -33,8 +34,8 @@ public:
     bool showingDesktop = false;
     QList<PlasmaWindow *> windows;
     PlasmaWindow *activeWindow = nullptr;
-    QVector<quint32> stackingOrder;
-    QVector<QByteArray> stackingOrderUuids;
+    QList<quint32> stackingOrder;
+    QList<QByteArray> stackingOrderUuids;
 
     void setup(org_kde_plasma_window_management *wm);
 
@@ -44,12 +45,17 @@ private:
     static void windowWithUuidCallback(void *data, org_kde_plasma_window_management *org_kde_plasma_window_management, uint32_t id, const char *uuid);
     static void stackingOrderCallback(void *data, org_kde_plasma_window_management *org_kde_plasma_window_management, wl_array *ids);
     static void stackingOrderUuidsCallback(void *data, org_kde_plasma_window_management *org_kde_plasma_window_management, const char *uuids);
+    static void stackingOrder2Callback(void *data, org_kde_plasma_window_management *interface);
     void setShowDesktop(bool set);
     void windowCreated(org_kde_plasma_window *id, quint32 internalId, const char *uuid);
-    void setStackingOrder(const QVector<quint32> &ids);
-    void setStackingOrder(const QVector<QByteArray> &uuids);
+    void setStackingOrder(const QList<quint32> &ids);
+    void setStackingOrder(const QList<QByteArray> &uuids);
+
+    static void stackingOrderWindow(void *data, struct org_kde_plasma_stacking_order *org_kde_plasma_stacking_order, const char *uuid);
+    static void stackingOrderDone(void *data, struct org_kde_plasma_stacking_order *org_kde_plasma_stacking_order);
 
     static struct org_kde_plasma_window_management_listener s_listener;
+    static const org_kde_plasma_stacking_order_listener s_stackingOrderListener;
     PlasmaWindowManagement *q;
 };
 
@@ -94,6 +100,7 @@ public:
     QString resourceName;
     QString applicationMenuServiceName;
     QString applicationMenuObjectPath;
+    QRect clientGeometry;
 
 private:
     static void titleChangedCallback(void *data, org_kde_plasma_window *window, const char *title);
@@ -113,6 +120,7 @@ private:
     static void appmenuChangedCallback(void *data, org_kde_plasma_window *org_kde_plasma_window, const char *service_name, const char *object_path);
     static void activityEnteredCallback(void *data, org_kde_plasma_window *org_kde_plasma_window, const char *id);
     static void activityLeftCallback(void *data, org_kde_plasma_window *org_kde_plasma_window, const char *id);
+    static void clientGeometryCallback(void *data, org_kde_plasma_window *window, int32_t x, int32_t y, uint32_t width, uint32_t height);
     void setActive(bool set);
     void setMinimized(bool set);
     void setMaximized(bool set);
@@ -145,6 +153,11 @@ private:
     static struct org_kde_plasma_window_listener s_listener;
 };
 
+struct StackingOrderData {
+    QPointer<PlasmaWindowManagement::Private> wm;
+    QList<QByteArray> list;
+};
+
 PlasmaWindowManagement::Private::Private(PlasmaWindowManagement *q)
     : q(q)
 {
@@ -156,6 +169,7 @@ org_kde_plasma_window_management_listener PlasmaWindowManagement::Private::s_lis
     stackingOrderCallback,
     stackingOrderUuidsCallback,
     windowWithUuidCallback,
+    stackingOrder2Callback,
 };
 
 void PlasmaWindowManagement::Private::setup(org_kde_plasma_window_management *windowManagement)
@@ -164,6 +178,16 @@ void PlasmaWindowManagement::Private::setup(org_kde_plasma_window_management *wi
     Q_ASSERT(windowManagement);
     wm.setup(windowManagement);
     org_kde_plasma_window_management_add_listener(windowManagement, &s_listener, this);
+
+    if (org_kde_plasma_window_management_get_version(windowManagement) >= ORG_KDE_PLASMA_WINDOW_MANAGEMENT_GET_STACKING_ORDER_SINCE_VERSION) {
+        auto object = org_kde_plasma_window_management_get_stacking_order(wm);
+        org_kde_plasma_stacking_order_add_listener(object,
+                                                   &s_stackingOrderListener,
+                                                   new StackingOrderData{
+                                                       .wm = this,
+                                                       .list = {},
+                                                   });
+    }
 }
 
 void PlasmaWindowManagement::Private::showDesktopCallback(void *data, org_kde_plasma_window_management *org_kde_plasma_window_management, uint32_t state)
@@ -273,17 +297,9 @@ void PlasmaWindowManagement::Private::windowCreated(org_kde_plasma_window *id, q
 
 void PlasmaWindowManagement::Private::stackingOrderCallback(void *data, org_kde_plasma_window_management *interface, wl_array *ids)
 {
-    // This is no-op since setStackingOrder(const QVector<quint32> &ids) is deprecated since 5.73,
+    // This is no-op since setStackingOrder(const QList<quint32> &ids) is deprecated since 5.73,
     // but we can't remove this method because it's needed in
     // PlasmaWindowManagement::Private::s_listener struct
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
-    auto wm = reinterpret_cast<PlasmaWindowManagement::Private *>(data);
-    Q_ASSERT(wm->wm == interface);
-    QVector<quint32> destination;
-    destination.resize(ids->size / sizeof(uint32_t));
-    memcpy(destination.data(), ids->data, ids->size);
-    wm->setStackingOrder(destination);
-#endif
 }
 
 void PlasmaWindowManagement::Private::stackingOrderUuidsCallback(void *data, org_kde_plasma_window_management *interface, const char *uuids)
@@ -293,18 +309,42 @@ void PlasmaWindowManagement::Private::stackingOrderUuidsCallback(void *data, org
     wm->setStackingOrder(QByteArray(uuids).split(';').toVector());
 }
 
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
-void PlasmaWindowManagement::Private::setStackingOrder(const QVector<quint32> &ids)
+void PlasmaWindowManagement::Private::stackingOrderWindow(void *data, org_kde_plasma_stacking_order *org_kde_plasma_stacking_order, const char *uuid)
 {
-    if (stackingOrder == ids) {
-        return;
-    }
-    stackingOrder = ids;
-    Q_EMIT q->stackingOrderChanged();
+    Q_UNUSED(org_kde_plasma_stacking_order);
+    auto order = static_cast<StackingOrderData *>(data);
+    order->list.push_back(uuid);
 }
-#endif
 
-void PlasmaWindowManagement::Private::setStackingOrder(const QVector<QByteArray> &uuids)
+void PlasmaWindowManagement::Private::stackingOrderDone(void *data, org_kde_plasma_stacking_order *org_kde_plasma_stacking_order)
+{
+    auto order = static_cast<StackingOrderData *>(data);
+    if (order->wm) {
+        order->wm->setStackingOrder(order->list);
+    }
+    delete order;
+    org_kde_plasma_stacking_order_destroy(org_kde_plasma_stacking_order);
+}
+
+const org_kde_plasma_stacking_order_listener PlasmaWindowManagement::Private::s_stackingOrderListener = {
+    .window = stackingOrderWindow,
+    .done = stackingOrderDone,
+};
+
+void PlasmaWindowManagement::Private::stackingOrder2Callback(void *data, org_kde_plasma_window_management *interface)
+{
+    auto wm = reinterpret_cast<PlasmaWindowManagement::Private *>(data);
+    Q_ASSERT(wm->wm == interface);
+    auto object = org_kde_plasma_window_management_get_stacking_order(wm->wm);
+    org_kde_plasma_stacking_order_add_listener(object,
+                                               &s_stackingOrderListener,
+                                               new StackingOrderData{
+                                                   .wm = wm,
+                                                   .list = {},
+                                               });
+}
+
+void PlasmaWindowManagement::Private::setStackingOrder(const QList<QByteArray> &uuids)
 {
     if (stackingOrderUuids == uuids) {
         return;
@@ -409,14 +449,7 @@ PlasmaWindowModel *PlasmaWindowManagement::createWindowModel()
     return new PlasmaWindowModel(this);
 }
 
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
-QVector<quint32> PlasmaWindowManagement::stackingOrder() const
-{
-    return d->stackingOrder;
-}
-#endif
-
-QVector<QByteArray> PlasmaWindowManagement::stackingOrderUuids() const
+QList<QByteArray> PlasmaWindowManagement::stackingOrderUuids() const
 {
     return d->stackingOrderUuids;
 }
@@ -439,6 +472,7 @@ org_kde_plasma_window_listener PlasmaWindow::Private::s_listener = {
     activityEnteredCallback,
     activityLeftCallback,
     resourceNameChangedCallback,
+    clientGeometryCallback,
 };
 
 void PlasmaWindow::Private::appmenuChangedCallback(void *data, org_kde_plasma_window *window, const char *service_name, const char *object_path)
@@ -554,15 +588,6 @@ void PlasmaWindow::Private::virtualDesktopChangedCallback([[maybe_unused]] void 
                                                           [[maybe_unused]] int32_t number)
 {
     // Can't remove this method as it's used in PlasmaWindow::Private::s_listener struct
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
-    Q_UNUSED(window)
-    Private *p = cast(data);
-    if (p->desktop == static_cast<quint32>(number)) {
-        return;
-    }
-    p->desktop = number;
-    Q_EMIT p->q->virtualDesktopChanged();
-#endif
 }
 
 void PlasmaWindow::Private::unmappedCallback(void *data, org_kde_plasma_window *window)
@@ -948,13 +973,6 @@ QString PlasmaWindow::title() const
     return d->title;
 }
 
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
-quint32 PlasmaWindow::virtualDesktop() const
-{
-    return d->desktop;
-}
-#endif
-
 bool PlasmaWindow::isActive() const
 {
     return d->active;
@@ -1090,13 +1108,6 @@ void PlasmaWindow::requestResize()
     org_kde_plasma_window_request_resize(d->window);
 }
 
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
-void PlasmaWindow::requestVirtualDesktop(quint32 desktop)
-{
-    org_kde_plasma_window_set_virtual_desktop(d->window, desktop);
-}
-#endif
-
 void PlasmaWindow::requestToggleKeepAbove()
 {
     if (d->keepAbove) {
@@ -1133,6 +1144,15 @@ void PlasmaWindow::requestToggleMaximized()
     }
 }
 
+void PlasmaWindow::requestToggleFullscreen()
+{
+    if (d->fullscreen) {
+        org_kde_plasma_window_set_state(d->window, ORG_KDE_PLASMA_WINDOW_MANAGEMENT_STATE_FULLSCREEN, 0);
+    } else {
+        org_kde_plasma_window_set_state(d->window, ORG_KDE_PLASMA_WINDOW_MANAGEMENT_STATE_FULLSCREEN, ORG_KDE_PLASMA_WINDOW_MANAGEMENT_STATE_FULLSCREEN);
+    }
+}
+
 void PlasmaWindow::setMinimizedGeometry(Surface *panel, const QRect &geom)
 {
     org_kde_plasma_window_set_minimized_geometry(d->window, *panel, geom.x(), geom.y(), geom.width(), geom.height());
@@ -1151,13 +1171,6 @@ void PlasmaWindow::requestToggleShaded()
         org_kde_plasma_window_set_state(d->window, ORG_KDE_PLASMA_WINDOW_MANAGEMENT_STATE_SHADED, ORG_KDE_PLASMA_WINDOW_MANAGEMENT_STATE_SHADED);
     }
 }
-
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 73)
-quint32 PlasmaWindow::internalId() const
-{
-    return d->internalId;
-}
-#endif
 
 QByteArray PlasmaWindow::uuid() const
 {
@@ -1362,5 +1375,25 @@ PlasmaActivation::PlasmaActivation(PlasmaActivationFeedback *parent, org_kde_pla
 }
 
 PlasmaActivation::~PlasmaActivation() = default;
+
+QRect PlasmaWindow::clientGeometry() const
+{
+    return d->clientGeometry;
+}
+
+void PlasmaWindow::Private::clientGeometryCallback(void *data, org_kde_plasma_window *window, int32_t x, int32_t y, uint32_t width, uint32_t height)
+{
+    Q_UNUSED(window)
+    Private *p = cast(data);
+    const QRect geo(x, y, width, height);
+    if (p->clientGeometry == geo) {
+        return;
+    }
+    p->clientGeometry = geo;
+    Q_EMIT p->q->clientGeometryChanged();
+}
+
 }
 }
+
+#include "plasmawindowmanagement.moc"

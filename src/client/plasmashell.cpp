@@ -41,11 +41,11 @@ private:
     static void autoHidingPanelShownCallback(void *data, org_kde_plasma_surface *org_kde_plasma_surface);
 
     PlasmaShellSurface *q;
-    static QVector<Private *> s_surfaces;
+    static QList<Private *> s_surfaces;
     static const org_kde_plasma_surface_listener s_listener;
 };
 
-QVector<PlasmaShellSurface::Private *> PlasmaShellSurface::Private::s_surfaces;
+QList<PlasmaShellSurface::Private *> PlasmaShellSurface::Private::s_surfaces;
 
 PlasmaShell::PlasmaShell(QObject *parent)
     : QObject(parent)
@@ -276,9 +276,7 @@ void PlasmaShellSurface::setRole(PlasmaShellSurface::Role role)
         }
         break;
     case Role::AppletPopup:
-        // ORG_KDE_PLASMA_SURFACE_ROLE_APPLETPOPUP_SINCE_VERSION is not used for this check
-        // because it wrongly is 7 with old plasma wayland protocols
-        if (wl_proxy_get_version(d->surface) < 8) {
+        if (wl_proxy_get_version(d->surface) < ORG_KDE_PLASMA_SURFACE_ROLE_APPLETPOPUP_SINCE_VERSION) {
             // dock is what applet popups were before
             wlRole = ORG_KDE_PLASMA_SURFACE_ROLE_PANEL;
             setPanelBehavior(PanelBehavior::WindowsGoBelow);
@@ -350,3 +348,5 @@ void PlasmaShellSurface::setPanelTakesFocus(bool takesFocus)
 
 }
 }
+
+#include "moc_plasmashell.cpp"

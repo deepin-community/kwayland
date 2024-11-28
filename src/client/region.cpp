@@ -6,8 +6,8 @@
 #include "region.h"
 #include "wayland_pointer_p.h"
 // Qt
+#include <QList>
 #include <QRegion>
-#include <QVector>
 // Wayland
 #include <wayland-client-protocol.h>
 
@@ -137,3 +137,5 @@ Region::operator wl_region *()
 
 }
 }
+
+#include "moc_region.cpp"

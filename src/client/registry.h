@@ -23,14 +23,8 @@ struct wl_shm;
 struct wl_subcompositor;
 struct wl_text_input_manager;
 struct zwp_text_input_manager_v2;
-struct _wl_fullscreen_shell;
 struct org_kde_kwin_appmenu_manager;
-struct org_kde_kwin_outputmanagement;
-struct org_kde_kwin_outputdevice;
 struct org_kde_kwin_fake_input;
-struct org_kde_kwin_idle;
-struct org_kde_kwin_keystate;
-struct org_kde_kwin_remote_access_manager;
 struct org_kde_kwin_dpms_manager;
 struct org_kde_kwin_shadow_manager;
 struct org_kde_kwin_blur_manager;
@@ -40,8 +34,6 @@ struct org_kde_plasma_activation_feedback;
 struct org_kde_plasma_shell;
 struct org_kde_plasma_virtual_desktop_management;
 struct org_kde_plasma_window_management;
-struct org_kde_kwin_server_decoration_manager;
-struct org_kde_kwin_server_decoration_palette_manager;
 struct xdg_shell;
 struct zxdg_shell_v6;
 struct xdg_wm_base;
@@ -66,8 +58,6 @@ class DpmsManager;
 class EventQueue;
 class FakeInput;
 class FullscreenShell;
-class OutputManagement;
-class OutputDevice;
 class Idle;
 class IdleInhibitManager;
 class Keystate;
@@ -142,21 +132,16 @@ public:
         Seat, ///< Refers to the wl_seat interface
         Shm, ///< Refers to the wl_shm interface
         Output, ///< Refers to the wl_output interface
-        FullscreenShell, ///< Refers to the _wl_fullscreen_shell interface
         SubCompositor, ///< Refers to the wl_subcompositor interface;
         DataDeviceManager, ///< Refers to the wl_data_device_manager interface
         PlasmaShell, ///< Refers to org_kde_plasma_shell interface
         PlasmaWindowManagement, ///< Refers to org_kde_plasma_window_management interface
-        Idle, ///< Refers to org_kde_kwin_idle_interface interface
         FakeInput, ///< Refers to org_kde_kwin_fake_input interface
         Shadow, ///< Refers to org_kde_kwin_shadow_manager interface
         Blur, ///< refers to org_kde_kwin_blur_manager interface
         Contrast, ///< refers to org_kde_kwin_contrast_manager interface
         Slide, ///< refers to org_kde_kwin_slide_manager
         Dpms, ///< Refers to org_kde_kwin_dpms_manager interface
-        OutputManagement, ///< Refers to the wl_data_device_manager interface
-        OutputDevice, ///< Refers to the org_kde_kwin_outputdevice interface
-        ServerSideDecorationManager, ///< Refers to org_kde_kwin_server_decoration_manager
         TextInputManagerUnstableV0, ///< Refers to wl_text_input_manager @since 5.23
         TextInputManagerUnstableV2, ///< Refers to zwp_text_input_manager_v2 @since 5.23
         XdgShellUnstableV5, ///< Refers to xdg_shell (unstable version 5) @since 5.25
@@ -168,13 +153,10 @@ public:
         XdgShellUnstableV6, ///< Refers to zxdg_shell_v6 (unstable version 6) @since 5.39
         IdleInhibitManagerUnstableV1, ///< Refers to zwp_idle_inhibit_manager_v1 (unstable version 1) @since 5.41
         AppMenu, ///< Refers to org_kde_kwin_appmenu @since 5.42
-        ServerSideDecorationPalette, ///< Refers to org_kde_kwin_server_decoration_palette_manager @since 5.42
-        RemoteAccessManager, ///< Refers to org_kde_kwin_remote_access_manager interface @since 5.45
         PlasmaVirtualDesktopManagement, ///< Refers to org_kde_plasma_virtual_desktop_management interface @since 5.52
         XdgOutputUnstableV1, ///< refers to zxdg_output_v1 @since 5.47
         XdgShellStable, ///< refers to xdg_wm_base @since 5.48
         XdgDecorationUnstableV1, ///< refers to zxdg_decoration_manager_v1 @since 5.54
-        Keystate, ///< refers to org_kwin_keystate @since 5.60
         PlasmaActivationFeedback, ///< Refers to org_kde_plasma_activation_feedback interface, @since 5.83
     };
     explicit Registry(QObject *parent = nullptr);
@@ -282,7 +264,7 @@ public:
      * @returns All pairs of name and version of the given interface
      * @since 5.5
      **/
-    QVector<AnnouncedInterface> interfaces(Interface interface) const;
+    QList<AnnouncedInterface> interfaces(Interface interface) const;
 
     /**
      * @name Low-level bind methods for global interfaces.
@@ -325,21 +307,9 @@ public:
      **/
     wl_shm *bindShm(uint32_t name, uint32_t version) const;
     /**
-     * Binds the org_kde_kwin_outputmanagement with @p name and @p version.
-     * If the @p name does not exist or is not for the outputmanagement interface,
-     * @c null will be returned.
-     *
-     * Prefer using createOutputManagement instead.
-     * @see createOutputManagement
-     **/
-    org_kde_kwin_outputmanagement *bindOutputManagement(uint32_t name, uint32_t version) const;
-    /**
      * Binds the org_kde_kwin_outputdevice with @p name and @p version.
      * If the @p name does not exist or is not for the outputdevice interface,
      * @c null will be returned.
-     *
-     * Prefer using createOutputDevice instead.
-     * @see createOutputDevice
      **/
     wl_output *bindOutput(uint32_t name, uint32_t version) const;
     /**
@@ -351,26 +321,7 @@ public:
      * @see createSubCompositor
      **/
     wl_subcompositor *bindSubCompositor(uint32_t name, uint32_t version) const;
-    /**
-     * Binds the wl_output with @p name and @p version.
-     * If the @p name does not exist or is not for the output interface,
-     * @c null will be returned.
-     *
-     * Prefer using createOutput instead.
-     * @see createOutput
-     * @since 5.5
-     **/
-    org_kde_kwin_outputdevice *bindOutputDevice(uint32_t name, uint32_t version) const;
 
-    /**
-     * Binds the _wl_fullscreen_shell with @p name and @p version.
-     * If the @p name does not exist or is not for the fullscreen shell interface,
-     * @c null will be returned.
-     *
-     * Prefer using createFullscreenShell instead.
-     * @see createFullscreenShell
-     **/
-    _wl_fullscreen_shell *bindFullscreenShell(uint32_t name, uint32_t version) const;
     /**
      * Binds the wl_data_device_manager with @p name and @p version.
      * If the @p name does not exist or is not for the data device manager interface,
@@ -420,36 +371,6 @@ public:
      * @since 5.46
      **/
     org_kde_plasma_window_management *bindPlasmaWindowManagement(uint32_t name, uint32_t version) const;
-    /**
-     * Binds the org_kde_kwin_idle with @p name and @p version.
-     * If the @p name does not exist or is not for the idle interface,
-     * @c null will be returned.
-     *
-     * Prefer using createIdle instead.
-     * @see createIdle
-     * @since 5.4
-     **/
-    org_kde_kwin_idle *bindIdle(uint32_t name, uint32_t version) const;
-    /**
-     * Binds the org_kde_kwin_keystate with @p name and @p version.
-     * If the @p name does not exist or is not for the keystate interface,
-     * @c null will be returned.
-     *
-     * Prefer using createKeystate instead.
-     * @see createKeystate
-     * @since 5.60
-     **/
-    org_kde_kwin_keystate *bindKeystate(uint32_t name, uint32_t version) const;
-    /**
-     * Binds the org_kde_kwin_remote_access_manager with @p name and @p version.
-     * If the @p name does not exist or is not for the idle interface,
-     * @c null will be returned.
-     *
-     * Prefer using createRemoteAccessManager instead.
-     * @see createRemoteAccessManager
-     * @since 5.45
-     **/
-    org_kde_kwin_remote_access_manager *bindRemoteAccessManager(uint32_t name, uint32_t version) const;
     /**
      * Binds the org_kde_kwin_fake_input with @p name and @p version.
      * If the @p name does not exist or is not for the fake input interface,
@@ -510,16 +431,6 @@ public:
      * @since 5.5
      **/
     org_kde_kwin_dpms_manager *bindDpmsManager(uint32_t name, uint32_t version) const;
-    /**
-     * Binds the org_kde_kwin_server_decoration_manager with @p name and @p version.
-     * If the @p name does not exist or is not for the server side decoration manager interface,
-     * @c null will be returned.
-     *
-     * Prefer using createServerSideDecorationManager instead.
-     * @see createServerSideDecorationManager
-     * @since 5.6
-     **/
-    org_kde_kwin_server_decoration_manager *bindServerSideDecorationManager(uint32_t name, uint32_t version) const;
     /**
      * Binds the wl_text_input_manager with @p name and @p version.
      * If the @p name does not exist or is not for the text input interface in unstable version 0,
@@ -645,17 +556,6 @@ public:
     org_kde_kwin_appmenu_manager *bindAppMenuManager(uint32_t name, uint32_t version) const;
 
     /**
-     * Binds the org_kde_kwin_server_decoration_palette_manager with @p name and @p version.
-     * If the @p name does not exist or is not for the server side decoration palette manager interface,
-     * @c null will be returned.
-     *
-     * Prefer using createServerSideDecorationPaletteManager instead.
-     * @see createServerSideDecorationPaletteManager
-     * @since 5.42
-     **/
-    org_kde_kwin_server_decoration_palette_manager *bindServerSideDecorationPaletteManager(uint32_t name, uint32_t version) const;
-
-    /**
      * Binds the zxdg_output_v1 with @p name and @p version.
      * If the @p name does not exist,
      * @c null will be returned.
@@ -774,54 +674,6 @@ public:
      **/
     Output *createOutput(quint32 name, quint32 version, QObject *parent = nullptr);
     /**
-     * Creates an KWinOutputManagement and sets it up to manage the interface identified
-     * by @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the wl_output interface,
-     * the returned KWinConnectors will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_outputmanagement interface to bind
-     * @param version The version or the org_kde_kwin_outputmanagement interface to use
-     * @param parent The parent for KWinOutputManagement
-     *
-     * @returns The created KWinOutputManagement.
-     * @since 5.5
-     **/
-    OutputManagement *createOutputManagement(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
-     * Creates an OutputDevice and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the org_kde_kwin_outputdevice interface,
-     * the returned OutputDevice will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_outputdevice interface to bind
-     * @param version The version or the org_kde_kwin_outputdevice interface to use
-     * @param parent The parent for OutputDevice
-     *
-     * @returns The created Output.
-     * @since 5.5
-     **/
-    OutputDevice *createOutputDevice(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
-     * Creates a FullscreenShell and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the _wl_fullscreen_shell interface,
-     * the returned FullscreenShell will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the _wl_fullscreen_shell interface to bind
-     * @param version The version or the _wl_fullscreen_shell interface to use
-     * @param parent The parent for FullscreenShell
-     *
-     * @returns The created FullscreenShell.
-     * @since 5.5
-     **/
-    FullscreenShell *createFullscreenShell(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
      * Creates a DataDeviceManager and sets it up to manage the interface identified by
      * @p name and @p version.
      *
@@ -900,54 +752,6 @@ public:
      * @since 5.4
      **/
     PlasmaWindowManagement *createPlasmaWindowManagement(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
-     * Creates an Idle and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the org_kde_kwin_idle interface,
-     * the returned Idle will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_idle interface to bind
-     * @param version The version or the org_kde_kwin_idle interface to use
-     * @param parent The parent for Idle
-     *
-     * @returns The created Idle.
-     * @since 5.4
-     **/
-    Idle *createIdle(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
-     * Creates a Keystate and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the org_kde_kwin_keystate interface,
-     * the returned Keystate will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_keystate interface to bind
-     * @param version The version or the org_kde_kwin_keystate interface to use
-     * @param parent The parent for Keystate
-     *
-     * @returns The created Keystate.
-     * @since 5.60
-     **/
-    Keystate *createKeystate(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
-     * Creates a RemoteAccessManager and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the org_kde_kwin_remote_access_manager interface,
-     * the returned RemoteAccessManager will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_remote_access_manager interface to bind
-     * @param version The version or the org_kde_kwin_remote_access_manager interface to use
-     * @param parent The parent for RemoteAccessManager
-     *
-     * @returns The created RemoteAccessManager.
-     * @since 5.45
-     **/
-    RemoteAccessManager *createRemoteAccessManager(quint32 name, quint32 version, QObject *parent = nullptr);
     /**
      * Creates a FakeInput and sets it up to manage the interface identified by
      * @p name and @p version.
@@ -1044,22 +848,6 @@ public:
      * @since 5.5
      **/
     DpmsManager *createDpmsManager(quint32 name, quint32 version, QObject *parent = nullptr);
-    /**
-     * Creates a ServerSideDecorationManager and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the org_kde_kwin_server_decoration_manager interface,
-     * the returned ServerSideDecorationManager will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_server_decoration_manager interface to bind
-     * @param version The version or the org_kde_kwin_server_decoration_manager interface to use
-     * @param parent The parent for ServerSideDecorationManager
-     *
-     * @returns The created ServerSideDecorationManager.
-     * @since 5.6
-     **/
-    ServerSideDecorationManager *createServerSideDecorationManager(quint32 name, quint32 version, QObject *parent = nullptr);
     /**
      * Creates a TextInputManager and sets it up to manage the interface identified by
      * @p name and @p version.
@@ -1215,23 +1003,6 @@ public:
     AppMenuManager *createAppMenuManager(quint32 name, quint32 version, QObject *parent = nullptr);
 
     /**
-     * Creates a ServerSideDecorationPaletteManager and sets it up to manage the interface identified by
-     * @p name and @p version.
-     *
-     * Note: in case @p name is invalid or isn't for the org_kde_kwin_appmenu_manager interface,
-     * the returned ServerSideDecorationPaletteManager will not be valid. Therefore it's recommended to call
-     * isValid on the created instance.
-     *
-     * @param name The name of the org_kde_kwin_server_decoration_palette_manager interface to bind
-     * @param version The version or the org_kde_kwin_server_decoration_palette_manager interface to use
-     * @param parent The parent for ServerSideDecorationPaletteManager
-     *
-     * @returns The created ServerSideDecorationPaletteManager.
-     * @since 5.42
-     **/
-    ServerSideDecorationPaletteManager *createServerSideDecorationPaletteManager(quint32 name, quint32 version, QObject *parent = nullptr);
-
-    /**
      * Creates an XdgOutputManager and sets it up to manage the interface identified by
      * @p name and @p version.
      *
@@ -1322,26 +1093,12 @@ Q_SIGNALS:
      **/
     void outputAnnounced(quint32 name, quint32 version);
     /**
-     * Emitted whenever a _wl_fullscreen_shell interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     **/
-    void fullscreenShellAnnounced(quint32 name, quint32 version);
-    /**
      * Emitted whenever a wl_data_device_manager interface gets announced.
      * @param name The name for the announced interface
      * @param version The maximum supported version of the announced interface
      **/
     void dataDeviceManagerAnnounced(quint32 name, quint32 version);
 
-    void outputManagementAnnounced(quint32 name, quint32 version);
-    /**
-     * Emitted whenever a org_kde_kwin_outputdevice interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.5
-     **/
-    void outputDeviceAnnounced(quint32 name, quint32 version);
     /**
      * Emitted whenever a org_kde_plasma_shell interface gets announced.
      * @param name The name for the announced interface
@@ -1370,20 +1127,6 @@ Q_SIGNALS:
      * @since 5.4
      **/
     void plasmaWindowManagementAnnounced(quint32 name, quint32 version);
-    /**
-     * Emitted whenever a org_kde_kwin_idle interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.4
-     **/
-    void idleAnnounced(quint32 name, quint32 version);
-    /**
-     * Emitted whenever a org_kde_kwin_remote_access_manager interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.45
-     **/
-    void remoteAccessManagerAnnounced(quint32 name, quint32 version);
     /**
      * Emitted whenever a org_kde_kwin_fake_input interface gets announced.
      * @param name The name for the announced interface
@@ -1426,13 +1169,6 @@ Q_SIGNALS:
      * @since 5.5
      **/
     void dpmsAnnounced(quint32 name, quint32 version);
-    /**
-     * Emitted whenever a org_kde_kwin_server_decoration_manager interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.6
-     **/
-    void serverSideDecorationManagerAnnounced(quint32 name, quint32 version);
     /**
      * Emitted whenever a wl_text_input_manager interface gets announced.
      * @param name The name for the announced interface
@@ -1517,14 +1253,6 @@ Q_SIGNALS:
     void appMenuAnnounced(quint32 name, quint32 version);
 
     /**
-     * Emitted whenever a org_kde_kwin_server_decoration_palette_manager interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.42
-     */
-    void serverSideDecorationPaletteManagerAnnounced(quint32 name, quint32 version);
-
-    /**
      * Emitted whenever a zxdg_output_v1 interface gets announced.
      * @param name The name for the announced interface
      * @param version The maximum supported version of the announced interface
@@ -1547,14 +1275,6 @@ Q_SIGNALS:
      * @since 5.54
      **/
     void xdgDecorationAnnounced(quint32 name, quint32 version);
-
-    /**
-     * Emitted whenever a org_kde_kwin_keystate interface gets announced.
-     * @param name The name for the announced interface
-     * @param version The maximum supported version of the announced interface
-     * @since 5.60
-     **/
-    void keystateAnnounced(quint32 name, quint32 version);
 
     ///@}
 
@@ -1593,27 +1313,10 @@ Q_SIGNALS:
      **/
     void outputRemoved(quint32 name);
     /**
-     * Emitted whenever a _wl_fullscreen_shell interface gets removed.
-     * @param name The name for the removed interface
-     **/
-    void fullscreenShellRemoved(quint32 name);
-    /**
      * Emitted whenever a wl_data_device_manager interface gets removed.
      * @param name The name for the removed interface
      **/
     void dataDeviceManagerRemoved(quint32 name);
-    /**
-     * Emitted whenever a org_kde_kwin_outputmanagement interface gets removed.
-     * @param name The name for the removed interface
-     * @since 5.5
-     **/
-    void outputManagementRemoved(quint32 name);
-    /**
-     * Emitted whenever a org_kde_kwin_outputdevice interface gets removed.
-     * @param name The name for the removed interface
-     * @since 5.5
-     **/
-    void outputDeviceRemoved(quint32 name);
     /**
      * Emitted whenever a org_kde_plasma_shell interface gets removed.
      * @param name The name for the removed interface
@@ -1638,18 +1341,6 @@ Q_SIGNALS:
      * @since 5.4
      **/
     void plasmaWindowManagementRemoved(quint32 name);
-    /**
-     * Emitted whenever a org_kde_kwin_idle interface gets removed.
-     * @param name The name for the removed interface
-     * @since 5.4
-     **/
-    void idleRemoved(quint32 name);
-    /**
-     * Emitted whenever a org_kde_kwin_remote_access_manager interface gets removed.
-     * @param name The name for the removed interface
-     * @since 5.45
-     **/
-    void remoteAccessManagerRemoved(quint32 name);
     /**
      * Emitted whenever a org_kde_kwin_fake_input interface gets removed.
      * @param name The name for the removed interface
@@ -1686,12 +1377,6 @@ Q_SIGNALS:
      * @since 5.5
      **/
     void dpmsRemoved(quint32 name);
-    /**
-     * Emitted whenever a org_kde_kwin_server_decoration_manager interface gets removed.
-     * @param name The name for the removed interface
-     * @since 5.6
-     **/
-    void serverSideDecorationManagerRemoved(quint32 name);
     /**
      * Emitted whenever a wl_text_input_manager interface gets removed.
      * @param name The name for the removed interface
@@ -1764,13 +1449,6 @@ Q_SIGNALS:
     void appMenuRemoved(quint32 name);
 
     /**
-     * Emitted whenever a org_kde_kwin_server_decoration_palette_manager gets removed.
-     * @param name The name of the removed interface
-     * @since 5.42
-     **/
-    void serverSideDecorationPaletteManagerRemoved(quint32 name);
-
-    /**
      * Emitted whenever a zxdg_output_v1 gets removed.
      * @param name The name of the removed interface
      * @since 5.47
@@ -1789,13 +1467,6 @@ Q_SIGNALS:
      * @since 5.54
      **/
     void xdgDecorationRemoved(quint32 name);
-
-    /**
-     * Emitted whenever a org_kde_kwin_keystate gets removed.
-     * @param name The name of the removed interface
-     * @since 5.60
-     **/
-    void keystateRemoved(quint32 name);
 
     ///@}
     /**

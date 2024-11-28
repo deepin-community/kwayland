@@ -1,10 +1,5 @@
 add_subdirectory(client)
 
-# The server part of this repo has been moved to Plasma kwayland-server since 5.73
-if(EXCLUDE_DEPRECATED_BEFORE_AND_AT VERSION_LESS 5.74.0)
-    add_subdirectory(server)
-endif()
-
 add_subdirectory(tools)
 
 ecm_qt_install_logging_categories(
@@ -28,23 +23,20 @@ if(BUILD_QCH)
     endmacro()
 
     _make_absolute(KWaylandClient_APIDOX_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/client")
-    _make_absolute(KWaylandServer_APIDOX_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/server")
 
     ecm_add_qch(
-        KF5Wayland_QCH
+        KWayland_QCH
         NAME KWayland
-        BASE_NAME KF5Wayland
-        VERSION ${KF_VERSION}
+        BASE_NAME KWayland
+        VERSION ${PROJECT_VERSION}
         ORG_DOMAIN org.kde
         SOURCES # using only public headers, to cover only public API
             ${KWaylandClient_APIDOX_SRCS}
-            ${KWaylandServer_APIDOX_SRCS}
         MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
         LINK_QCHS
-            Qt5Gui_QCH
+            Qt6Gui_QCH
         INCLUDE_DIRS
             ${KWaylandClient_APIDOX_BUILD_INCLUDE_DIRS}
-            ${KWaylandServer_APIDOX_BUILD_INCLUDE_DIRS}
         BLANK_MACROS
             KWAYLANDCLIENT_EXPORT
             KWAYLANDCLIENT_DEPRECATED
@@ -53,10 +45,6 @@ if(BUILD_QCH)
             "KWAYLANDCLIENT_DEPRECATED_VERSION_BELATED(x, y, xt, yt, t)"
             "KWAYLANDCLIENT_ENUMERATOR_DEPRECATED_VERSION(x, y, t)"
             "KWAYLANDCLIENT_ENUMERATOR_DEPRECATED_VERSION_BELATED(x, y, xt, yt, t)"
-            KWAYLANDSERVER_EXPORT
-            KWAYLANDSERVER_DEPRECATED
-            KWAYLANDSERVER_DEPRECATED_EXPORT
-            "KWAYLANDSERVER_DEPRECATED_VERSION(x, y, t)"
         TAGFILE_INSTALL_DESTINATION ${KDE_INSTALL_QTQCHDIR}
         QCH_INSTALL_DESTINATION ${KDE_INSTALL_QTQCHDIR}
         COMPONENT Devel

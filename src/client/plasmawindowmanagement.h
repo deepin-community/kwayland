@@ -159,22 +159,12 @@ public:
      **/
     PlasmaWindowModel *createWindowModel();
 
-#if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 73)
-    /**
-     * @returns windows stacking order
-     *
-     * @deprecated Since 5.73, use stackingOrderUuids()
-     */
-    KWAYLANDCLIENT_DEPRECATED_VERSION(5, 73, "Use PlasmaWindow::stackingOrderUuids()")
-    QVector<quint32> stackingOrder() const;
-#endif
-
     /**
      * @returns windows stacking order
      *
      * @since 5.73
      */
-    QVector<QByteArray> stackingOrderUuids() const;
+    QList<QByteArray> stackingOrderUuids() const;
 
 Q_SIGNALS:
     /**
@@ -211,16 +201,6 @@ Q_SIGNALS:
      * @since 5.5
      **/
     void removed();
-
-#if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 73)
-    /**
-     * The stacking order changed
-     * @since 5.70
-     * @deprecated Since 5.73, use stackingOrderUuidsChanged()
-     **/
-    KWAYLANDCLIENT_DEPRECATED_VERSION(5, 73, "Use PlasmaWindow::stackingOrderUuidsChanged()")
-    void stackingOrderChanged();
-#endif
 
     /**
      * The stacking order uuids changed
@@ -296,15 +276,6 @@ public:
      * @see appIdChanged
      **/
     QString appId() const;
-#if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 52)
-    /**
-     * @returns the id of the virtual desktop this PlasmaWindow is on
-     * @see virtualDesktopChanged
-     * @deprecated: Since 5.52, use plasmaVirtualDesktops instead
-     **/
-    KWAYLANDCLIENT_DEPRECATED_VERSION(5, 52, "Use PlasmaWindow::plasmaVirtualDesktops()")
-    quint32 virtualDesktop() const;
-#endif
     /**
      * @returns Whether the window is currently the active Window.
      * @see activeChanged
@@ -443,14 +414,6 @@ public:
      * @since 5.22
      */
     void requestResize();
-#if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 52)
-    /**
-     * Requests to send the window to virtual @p desktop.
-     * @deprecated: Since 5.52, use requestEnterVirtualDesktop instead
-     **/
-    KWAYLANDCLIENT_DEPRECATED_VERSION(5, 52, "Use PlasmaWindow::requestEnterVirtualDesktop(const QString &)")
-    void requestVirtualDesktop(quint32 desktop);
-#endif
 
     /**
      * Requests the window at this model row index have its keep above state toggled.
@@ -475,6 +438,12 @@ public:
     void requestToggleMaximized();
 
     /**
+     * Requests the window at this model row index have its fullscreen state toggled.
+     * @since 6.0
+     */
+    void requestToggleFullscreen();
+
+    /**
      * Sets the geometry of the taskbar entry for this window
      * relative to a panel in particular
      * @since 5.5
@@ -492,18 +461,6 @@ public:
      * @since 5.22
      */
     void requestToggleShaded();
-
-#if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 73)
-    /**
-     * An internal window identifier.
-     * This is not a global window identifier.
-     * This identifier does not correspond to QWindow::winId in any way.
-     *
-     * @deprecated Since 5.73, use uuid(const QString &) instead
-     */
-    KWAYLANDCLIENT_DEPRECATED_VERSION(5, 73, "Use PlasmaWindow::uuid(const QString &)")
-    quint32 internalId() const;
-#endif
 
     /**
      * A unique identifier for the window
@@ -615,6 +572,13 @@ public:
      */
     void sendToOutput(KWayland::Client::Output *output) const;
 
+    /**
+     * @returns The client geometry (i.e. without window borders) in absolute coordinates.
+     * @see clientGeometryChanged
+     * @since 6.2
+     **/
+    QRect clientGeometry() const;
+
 Q_SIGNALS:
     /**
      * The window title changed.
@@ -626,17 +590,6 @@ Q_SIGNALS:
      * @see appId
      **/
     void appIdChanged();
-#if KWAYLANDCLIENT_ENABLE_DEPRECATED_SINCE(5, 52)
-    /**
-     * The virtual desktop changed.
-     * @deprecated Since 5.52, use plasmaVirtualDesktopEntered and plasmaVirtualDesktopLeft instead
-     **/
-    KWAYLANDCLIENT_DEPRECATED_VERSION(
-        5,
-        52,
-        "Use PlasmaWindow::plasmaVirtualDesktopEntered(const QString &) and PlasmaWindow::plasmaVirtualDesktopLeft(const QString &)")
-    void virtualDesktopChanged();
-#endif
     /**
      * The window became active or inactive.
      * @see isActive
@@ -805,6 +758,13 @@ Q_SIGNALS:
      * @since 5.69
      **/
     void applicationMenuChanged();
+
+    /**
+     * This signal is emitted whenever the client geometry changes.
+     * @see clientGeometry
+     * @since 6.2
+     **/
+    void clientGeometryChanged();
 
 private:
     friend class PlasmaWindowManagement;
