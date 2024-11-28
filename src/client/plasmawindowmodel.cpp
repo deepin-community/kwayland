@@ -102,12 +102,6 @@ void PlasmaWindowModel::Private::addWindow(PlasmaWindow *window)
         this->dataChanged(window, IsKeepBelow);
     });
 
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
-    QObject::connect(window, &PlasmaWindow::virtualDesktopChanged, q, [window, this] {
-        this->dataChanged(window, VirtualDesktop);
-    });
-#endif
-
     QObject::connect(window, &PlasmaWindow::onAllDesktopsChanged, q, [window, this] {
         this->dataChanged(window, IsOnAllDesktops);
     });
@@ -164,7 +158,7 @@ void PlasmaWindowModel::Private::addWindow(PlasmaWindow *window)
 void PlasmaWindowModel::Private::dataChanged(PlasmaWindow *window, int role)
 {
     QModelIndex idx = q->index(windows.indexOf(window));
-    Q_EMIT q->dataChanged(idx, idx, QVector<int>() << role);
+    Q_EMIT q->dataChanged(idx, idx, QList<int>() << role);
 }
 
 PlasmaWindowModel::PlasmaWindowModel(PlasmaWindowManagement *parent)
@@ -194,8 +188,8 @@ QHash<int, QByteArray> PlasmaWindowModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
-    roles.insert(Qt::DisplayRole, "DisplayRole");
-    roles.insert(Qt::DecorationRole, "DecorationRole");
+    roles.insert(Qt::DisplayRole, "display");
+    roles.insert(Qt::DecorationRole, "decoration");
 
     QMetaEnum e = metaObject()->enumerator(metaObject()->indexOfEnumerator("AdditionalRoles"));
 
@@ -267,11 +261,6 @@ QVariant PlasmaWindowModel::data(const QModelIndex &index, int role) const
     } else if (role == Uuid) {
         return window->uuid();
     }
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
-    else if (role == VirtualDesktop) {
-        return window->virtualDesktop();
-    }
-#endif
 
     return QVariant();
 }
@@ -322,15 +311,6 @@ Q_INVOKABLE void PlasmaWindowModel::requestResize(int row)
     }
 }
 
-#if KWAYLANDCLIENT_BUILD_DEPRECATED_SINCE(5, 52)
-Q_INVOKABLE void PlasmaWindowModel::requestVirtualDesktop(int row, quint32 desktop)
-{
-    if (row >= 0 && row < d->windows.count()) {
-        d->windows.at(row)->requestVirtualDesktop(desktop);
-    }
-}
-#endif
-
 Q_INVOKABLE void PlasmaWindowModel::requestEnterVirtualDesktop(int row, const QString &id)
 {
     if (row >= 0 && row < d->windows.count()) {
@@ -366,6 +346,13 @@ Q_INVOKABLE void PlasmaWindowModel::requestToggleMaximized(int row)
     }
 }
 
+Q_INVOKABLE void PlasmaWindowModel::requestToggleFullscreen(int row)
+{
+    if (row >= 0 && row < d->windows.count()) {
+        d->windows.at(row)->requestToggleFullscreen();
+    }
+}
+
 Q_INVOKABLE void PlasmaWindowModel::setMinimizedGeometry(int row, Surface *panel, const QRect &geom)
 {
     if (row >= 0 && row < d->windows.count()) {
@@ -382,3 +369,5 @@ Q_INVOKABLE void PlasmaWindowModel::requestToggleShaded(int row)
 
 }
 }
+
+#include "moc_plasmawindowmodel.cpp"

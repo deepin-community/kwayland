@@ -10,11 +10,13 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDate>
+#include <QFile>
 #include <QFutureWatcher>
 #include <QMutexLocker>
 #include <QProcess>
+#include <QStandardPaths>
 #include <QTextStream>
-#include <QtConcurrent>
+#include <QtConcurrentRun>
 
 #include <QDebug>
 
@@ -1579,3 +1581,5 @@ int main(int argc, char **argv)
 
     return app.exec();
 }
+
+#include "moc_generator.cpp"

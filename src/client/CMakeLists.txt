@@ -4,7 +4,7 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
 
 # needed to access QPA
-include_directories(SYSTEM ${Qt${QT_MAJOR_VERSION}Gui_PRIVATE_INCLUDE_DIRS})
+include_directories(SYSTEM ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 set(CLIENT_LIB_SRCS
     appmenu.cpp
@@ -21,15 +21,8 @@ set(CLIENT_LIB_SRCS
     datasource.cpp
     dpms.cpp
     fakeinput.cpp
-    fullscreen_shell.cpp
-    idle.cpp
     idleinhibit.cpp
     keyboard.cpp
-    keystate.cpp
-    remote_access.cpp
-    outputconfiguration.cpp
-    outputmanagement.cpp
-    outputdevice.cpp
     output.cpp
     pointer.cpp
     pointerconstraints.cpp
@@ -42,8 +35,6 @@ set(CLIENT_LIB_SRCS
     registry.cpp
     relativepointer.cpp
     seat.cpp
-    server_decoration.cpp
-    server_decoration_palette.cpp
     shadow.cpp
     shell.cpp
     shm_pool.cpp
@@ -68,158 +59,139 @@ set(CLIENT_LIB_SRCS
 ecm_qt_declare_logging_category(CLIENT_LIB_SRCS
     HEADER logging.h
     IDENTIFIER KWAYLAND_CLIENT
-    CATEGORY_NAME kf.wayland.client
-    OLD_CATEGORY_NAMES kwayland-client
+    CATEGORY_NAME kde.plasma.wayland.client
+    OLD_CATEGORY_NAMES kwayland-client kf.wayland.client
     DEFAULT_SEVERITY Critical
     DESCRIPTION "KWayland Client Library"
     EXPORT KWAYLAND
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/fullscreen-shell.xml
-    BASENAME fullscreen-shell
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/output-management.xml
-    BASENAME output-management
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/outputdevice.xml
-    BASENAME org_kde_kwin_outputdevice
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/plasma-shell.xml
     BASENAME plasma-shell
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/plasma-virtual-desktop.xml
     BASENAME plasma-virtual-desktop
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/plasma-window-management.xml
     BASENAME plasma-window-management
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/idle.xml
-    BASENAME idle
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/fake-input.xml
     BASENAME fake-input
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/shadow.xml
     BASENAME shadow
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/blur.xml
     BASENAME blur
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/contrast.xml
     BASENAME contrast
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/slide.xml
     BASENAME slide
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/dpms.xml
     BASENAME dpms
-)
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/server-decoration.xml
-    BASENAME server-decoration
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/text-input.xml
     BASENAME text-input-v0
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/text-input-unstable-v2.xml
     BASENAME text-input-v2
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/xdg-shell/xdg-shell-unstable-v6.xml
     BASENAME xdg-shell-v6
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/relative-pointer/relative-pointer-unstable-v1.xml
     BASENAME relativepointer-unstable-v1
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml
     BASENAME pointer-gestures-unstable-v1
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml
     BASENAME pointer-constraints-unstable-v1
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml
     BASENAME xdg-foreign-unstable-v2
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml
     BASENAME idle-inhibit-unstable-v1
+    PRIVATE_CODE
 )
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/appmenu.xml
     BASENAME appmenu
+    PRIVATE_CODE
 )
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/server-decoration-palette.xml
-    BASENAME server-decoration-palette
-)
-
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/xdg-output/xdg-output-unstable-v1.xml
     BASENAME xdg-output-unstable-v1
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/stable/xdg-shell/xdg-shell.xml
     BASENAME xdg-shell
+    PRIVATE_CODE
 )
 
 ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
     PROTOCOL ${WaylandProtocols_DATADIR}/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml
     BASENAME xdg-decoration-unstable-v1
-)
-
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/keystate.xml
-    BASENAME keystate
+    PRIVATE_CODE
 )
 
 set(CLIENT_GENERATED_FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-output-management-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-org_kde_kwin_outputdevice-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-plasma-shell-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-plasma-shell-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-plasma-window-management-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-idle-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-fake-input-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-shadow-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-blur-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-contrast-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-slide-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-dpms-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-server-decoration-client-protocol.h
-    ${CMAKE_CURRENT_BINARY_DIR}/wayland-server-decoration-palette-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-text-input-v0-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-text-input-v2-client-protocol.h
     ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-v6-client-protocol.h
@@ -234,59 +206,47 @@ set(CLIENT_GENERATED_FILES
 
 set_source_files_properties(${CLIENT_GENERATED_FILES} PROPERTIES SKIP_AUTOMOC ON)
 
-ecm_add_wayland_client_protocol(CLIENT_LIB_SRCS
-    PROTOCOL ${PLASMA_WAYLAND_PROTOCOLS_DIR}/remote-access.xml
-    BASENAME remote-access
-)
-
 set_source_files_properties(${CLIENT_LIB_SRCS} PROPERTIES
     COMPILE_FLAGS -DQT_NO_KEYWORDS)
 
-add_library(KF5WaylandClient ${CLIENT_LIB_SRCS} surface_p.cpp)
-add_library(KF5::WaylandClient ALIAS KF5WaylandClient)
-ecm_generate_export_header(KF5WaylandClient
+add_library(KWaylandClient ${CLIENT_LIB_SRCS} surface_p.cpp)
+add_library(Plasma::KWaylandClient ALIAS KWaylandClient)
+
+ecm_generate_export_header(KWaylandClient
     BASE_NAME
         KWaylandClient
     EXPORT_FILE_NAME
         KWayland/Client/kwaylandclient_export.h
-    GROUP_BASE_NAME KF
-    VERSION ${KF_VERSION}
+    VERSION ${PROJECT_VERSION}
+    USE_VERSION_HEADER
+    VERSION_BASE_NAME KWayland
     DEPRECATED_BASE_VERSION 0
-    DEPRECATION_VERSIONS 5.49 5.50 5.52 5.53 5.73 5.82
+    DEPRECATION_VERSIONS
     EXCLUDE_DEPRECATED_BEFORE_AND_AT ${EXCLUDE_DEPRECATED_BEFORE_AND_AT}
 )
 
 if (HAVE_MEMFD)
-    target_compile_definitions(KF5WaylandClient PRIVATE -DHAVE_MEMFD=1)
+    target_compile_definitions(KWaylandClient PRIVATE -DHAVE_MEMFD=1)
 else()
-    target_compile_definitions(KF5WaylandClient PRIVATE -DHAVE_MEMFD=0)
+    target_compile_definitions(KWaylandClient PRIVATE -DHAVE_MEMFD=0)
 endif()
 
-target_include_directories(KF5WaylandClient
-    INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF}/KWayland>"
+target_include_directories(KWaylandClient
+    INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR}/KWayland>"
 )
 
-target_link_libraries(KF5WaylandClient
-    PUBLIC Qt${QT_MAJOR_VERSION}::Gui
+target_link_libraries(KWaylandClient
+    PUBLIC Qt6::Gui
     PRIVATE Wayland::Client
-        Qt${QT_MAJOR_VERSION}::Concurrent
-        Qt${QT_MAJOR_VERSION}::WaylandClientPrivate
+        Qt6::Concurrent
+        Qt6::WaylandClientPrivate
 )
 
-if (QT_MAJOR_VERSION EQUAL "5")
-    target_link_libraries(KF5WaylandClient
-        PRIVATE
-            Qt::XkbCommonSupportPrivate
-            PkgConfig::XKBCommon
-    )
-endif()
-
-set_target_properties(KF5WaylandClient PROPERTIES VERSION   ${KWAYLAND_VERSION}
+set_target_properties(KWaylandClient PROPERTIES VERSION   ${KWAYLAND_VERSION}
                                                  SOVERSION ${KWAYLAND_SOVERSION}
-                                                 EXPORT_NAME WaylandClient
 )
 
-install(TARGETS KF5WaylandClient EXPORT KF5WaylandTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KWaylandClient EXPORT KWaylandTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 set(CLIENT_LIB_HEADERS
   ${CMAKE_CURRENT_BINARY_DIR}/KWayland/Client/kwaylandclient_export.h
@@ -303,15 +263,8 @@ set(CLIENT_LIB_HEADERS
   datasource.h
   dpms.h
   fakeinput.h
-  fullscreen_shell.h
-  idle.h
   idleinhibit.h
   keyboard.h
-  keystate.h
-  remote_access.h
-  outputconfiguration.h
-  outputmanagement.h
-  outputdevice.h
   output.h
   pointer.h
   pointerconstraints.h
@@ -324,8 +277,6 @@ set(CLIENT_LIB_HEADERS
   registry.h
   relativepointer.h
   seat.h
-  server_decoration.h
-  server_decoration_palette.h
   shadow.h
   shell.h
   shm_pool.h
@@ -343,14 +294,9 @@ set(CLIENT_LIB_HEADERS
 
 install(FILES
   ${CLIENT_LIB_HEADERS}
-  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KWayland/KWayland/Client COMPONENT Devel
+  DESTINATION ${KDE_INSTALL_INCLUDEDIR}/KWayland/KWayland/Client COMPONENT Devel
 )
 
 # make available to ecm_add_qch in parent folder
 set(KWaylandClient_APIDOX_SRCS ${CLIENT_LIB_HEADERS} PARENT_SCOPE)
 set(KWaylandClient_APIDOX_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
-
-include(ECMGeneratePriFile)
-ecm_generate_pri_file(BASE_NAME KWaylandClient LIB_NAME KF5WaylandClient DEPS "core" FILENAME_VAR PRI_FILENAME INCLUDE_INSTALL_DIR ${KDE_INSTALL_INCLUDEDIR_KF}/KWayland)
-install(FILES ${PRI_FILENAME}
-        DESTINATION ${ECM_MKSPECS_INSTALL_DIR})

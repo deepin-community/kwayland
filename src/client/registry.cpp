@@ -14,25 +14,16 @@
 #include "dpms.h"
 #include "event_queue.h"
 #include "fakeinput.h"
-#include "fullscreen_shell.h"
-#include "idle.h"
 #include "idleinhibit.h"
-#include "keystate.h"
 #include "logging.h"
 #include "output.h"
-#include "outputconfiguration.h"
-#include "outputdevice.h"
-#include "outputmanagement.h"
 #include "plasmashell.h"
 #include "plasmavirtualdesktop.h"
 #include "plasmawindowmanagement.h"
 #include "pointerconstraints.h"
 #include "pointergestures.h"
 #include "relativepointer.h"
-#include "remote_access.h"
 #include "seat.h"
-#include "server_decoration.h"
-#include "server_decoration_palette.h"
 #include "shadow.h"
 #include "shell.h"
 #include "shm_pool.h"
@@ -55,21 +46,13 @@
 #include <wayland-contrast-client-protocol.h>
 #include <wayland-dpms-client-protocol.h>
 #include <wayland-fake-input-client-protocol.h>
-#include <wayland-fullscreen-shell-client-protocol.h>
-#include <wayland-idle-client-protocol.h>
 #include <wayland-idle-inhibit-unstable-v1-client-protocol.h>
-#include <wayland-keystate-client-protocol.h>
-#include <wayland-org_kde_kwin_outputdevice-client-protocol.h>
-#include <wayland-output-management-client-protocol.h>
 #include <wayland-plasma-shell-client-protocol.h>
 #include <wayland-plasma-virtual-desktop-client-protocol.h>
 #include <wayland-plasma-window-management-client-protocol.h>
 #include <wayland-pointer-constraints-unstable-v1-client-protocol.h>
 #include <wayland-pointer-gestures-unstable-v1-client-protocol.h>
 #include <wayland-relativepointer-unstable-v1-client-protocol.h>
-#include <wayland-remote-access-client-protocol.h>
-#include <wayland-server-decoration-client-protocol.h>
-#include <wayland-server-decoration-palette-client-protocol.h>
 #include <wayland-shadow-client-protocol.h>
 #include <wayland-slide-client-protocol.h>
 #include <wayland-text-input-v0-client-protocol.h>
@@ -172,25 +155,11 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::plasmaVirtualDesktopManagementRemoved
     }},
     {Registry::Interface::PlasmaWindowManagement, {
-        16,
+        18,
         QByteArrayLiteral("org_kde_plasma_window_management"),
         &org_kde_plasma_window_management_interface,
         &Registry::plasmaWindowManagementAnnounced,
         &Registry::plasmaWindowManagementRemoved
-    }},
-    {Registry::Interface::Idle, {
-        1,
-        QByteArrayLiteral("org_kde_kwin_idle"),
-        &org_kde_kwin_idle_interface,
-        &Registry::idleAnnounced,
-        &Registry::idleRemoved
-    }},
-    {Registry::Interface::RemoteAccessManager, {
-        1,
-        QByteArrayLiteral("org_kde_kwin_remote_access_manager"),
-        &org_kde_kwin_remote_access_manager_interface,
-        &Registry::remoteAccessManagerAnnounced,
-        &Registry::remoteAccessManagerRemoved
     }},
     {Registry::Interface::FakeInput, {
         4,
@@ -198,20 +167,6 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &org_kde_kwin_fake_input_interface,
         &Registry::fakeInputAnnounced,
         &Registry::fakeInputRemoved
-    }},
-    {Registry::Interface::OutputManagement, {
-        4,
-        QByteArrayLiteral("org_kde_kwin_outputmanagement"),
-        &org_kde_kwin_outputmanagement_interface,
-        &Registry::outputManagementAnnounced,
-        &Registry::outputManagementRemoved
-    }},
-    {Registry::Interface::OutputDevice, {
-        4,
-        QByteArrayLiteral("org_kde_kwin_outputdevice"),
-        &org_kde_kwin_outputdevice_interface,
-        &Registry::outputDeviceAnnounced,
-        &Registry::outputDeviceRemoved
     }},
     {Registry::Interface::Shadow, {
         2,
@@ -241,26 +196,12 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::slideAnnounced,
         &Registry::slideRemoved
     }},
-    {Registry::Interface::FullscreenShell, {
-        1,
-        QByteArrayLiteral("_wl_fullscreen_shell"),
-        &_wl_fullscreen_shell_interface,
-        &Registry::fullscreenShellAnnounced,
-        &Registry::fullscreenShellRemoved
-    }},
     {Registry::Interface::Dpms, {
         1,
         QByteArrayLiteral("org_kde_kwin_dpms_manager"),
         &org_kde_kwin_dpms_manager_interface,
         &Registry::dpmsAnnounced,
         &Registry::dpmsRemoved
-    }},
-    {Registry::Interface::ServerSideDecorationManager, {
-        1,
-        QByteArrayLiteral("org_kde_kwin_server_decoration_manager"),
-        &org_kde_kwin_server_decoration_manager_interface,
-        &Registry::serverSideDecorationManagerAnnounced,
-        &Registry::serverSideDecorationManagerRemoved
     }},
     {Registry::Interface::TextInputManagerUnstableV0, {
         1,
@@ -339,13 +280,6 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &Registry::appMenuAnnounced,
         &Registry::appMenuRemoved
     }},
-    {Registry::Interface::ServerSideDecorationPalette, {
-        1,
-        QByteArrayLiteral("org_kde_kwin_server_decoration_palette_manager"),
-        &org_kde_kwin_server_decoration_palette_manager_interface,
-        &Registry::serverSideDecorationPaletteManagerAnnounced,
-        &Registry::serverSideDecorationPaletteManagerRemoved
-    }},
     {Registry::Interface::XdgOutputUnstableV1, {
         2,
         QByteArrayLiteral("zxdg_output_manager_v1"),
@@ -366,13 +300,6 @@ static const QMap<Registry::Interface, SuppertedInterfaceData> s_interfaces = {
         &zxdg_decoration_manager_v1_interface,
         &Registry::xdgDecorationAnnounced,
         &Registry::xdgDecorationRemoved
-    }},
-    {Registry::Interface::Keystate, {
-        1,
-        QByteArrayLiteral("org_kde_kwin_keystate"),
-        &org_kde_kwin_keystate_interface,
-        &Registry::keystateAnnounced,
-        &Registry::keystateRemoved
     }},
     {Registry::Interface::PlasmaActivationFeedback, {
         1,
@@ -401,7 +328,7 @@ public:
     void setup();
     bool hasInterface(Interface interface) const;
     AnnouncedInterface interface(Interface interface) const;
-    QVector<AnnouncedInterface> interfaces(Interface interface) const;
+    QList<AnnouncedInterface> interfaces(Interface interface) const;
     Interface interfaceForName(quint32 name) const;
     template<typename T>
     T *bind(Interface interface, uint32_t name, uint32_t version) const;
@@ -596,9 +523,9 @@ bool Registry::Private::hasInterface(Registry::Interface interface) const
     return it != m_interfaces.constEnd();
 }
 
-QVector<Registry::AnnouncedInterface> Registry::Private::interfaces(Interface interface) const
+QList<Registry::AnnouncedInterface> Registry::Private::interfaces(Interface interface) const
 {
-    QVector<Registry::AnnouncedInterface> retVal;
+    QList<Registry::AnnouncedInterface> retVal;
     for (auto it = m_interfaces.constBegin(); it != m_interfaces.constEnd(); ++it) {
         const auto &data = *it;
         if (data.interface == interface) {
@@ -633,7 +560,7 @@ bool Registry::hasInterface(Registry::Interface interface) const
     return d->hasInterface(interface);
 }
 
-QVector<Registry::AnnouncedInterface> Registry::interfaces(Interface interface) const
+QList<Registry::AnnouncedInterface> Registry::interfaces(Interface interface) const
 {
     return d->interfaces(interface);
 }
@@ -659,18 +586,12 @@ BIND(Seat, wl_seat)
 BIND(Shell, wl_shell)
 BIND(Shm, wl_shm)
 BIND(SubCompositor, wl_subcompositor)
-BIND(FullscreenShell, _wl_fullscreen_shell)
 BIND(DataDeviceManager, wl_data_device_manager)
 BIND(PlasmaShell, org_kde_plasma_shell)
 BIND(PlasmaActivationFeedback, org_kde_plasma_activation_feedback)
 BIND(PlasmaVirtualDesktopManagement, org_kde_plasma_virtual_desktop_management)
 BIND(PlasmaWindowManagement, org_kde_plasma_window_management)
-BIND(Idle, org_kde_kwin_idle)
-BIND(RemoteAccessManager, org_kde_kwin_remote_access_manager)
 BIND(FakeInput, org_kde_kwin_fake_input)
-BIND(OutputManagement, org_kde_kwin_outputmanagement)
-BIND(OutputDevice, org_kde_kwin_outputdevice)
-BIND(ServerSideDecorationManager, org_kde_kwin_server_decoration_manager)
 BIND(TextInputManagerUnstableV0, wl_text_input_manager)
 BIND(TextInputManagerUnstableV2, zwp_text_input_manager_v2)
 BIND(XdgShellUnstableV5, xdg_shell)
@@ -682,14 +603,12 @@ BIND(PointerConstraintsUnstableV1, zwp_pointer_constraints_v1)
 BIND(XdgExporterUnstableV2, zxdg_exporter_v2)
 BIND(XdgImporterUnstableV2, zxdg_importer_v2)
 BIND(IdleInhibitManagerUnstableV1, zwp_idle_inhibit_manager_v1)
-BIND(Keystate, org_kde_kwin_keystate)
 BIND2(ShadowManager, Shadow, org_kde_kwin_shadow_manager)
 BIND2(BlurManager, Blur, org_kde_kwin_blur_manager)
 BIND2(ContrastManager, Contrast, org_kde_kwin_contrast_manager)
 BIND2(SlideManager, Slide, org_kde_kwin_slide_manager)
 BIND2(DpmsManager, Dpms, org_kde_kwin_dpms_manager)
 BIND2(AppMenuManager, AppMenu, org_kde_kwin_appmenu_manager)
-BIND2(ServerSideDecorationPaletteManager, ServerSideDecorationPalette, org_kde_kwin_server_decoration_palette_manager)
 BIND(XdgOutputUnstableV1, zxdg_output_manager_v1)
 BIND(XdgDecorationUnstableV1, zxdg_decoration_manager_v1)
 
@@ -725,28 +644,20 @@ CREATE(Compositor)
 CREATE(Seat)
 CREATE(Shell)
 CREATE(SubCompositor)
-CREATE(FullscreenShell)
 CREATE(Output)
 CREATE(DataDeviceManager)
 CREATE(PlasmaShell)
 CREATE(PlasmaActivationFeedback)
 CREATE(PlasmaVirtualDesktopManagement)
 CREATE(PlasmaWindowManagement)
-CREATE(Idle)
-CREATE(RemoteAccessManager)
 CREATE(FakeInput)
-CREATE(OutputManagement)
-CREATE(OutputDevice)
 CREATE(ShadowManager)
 CREATE(BlurManager)
 CREATE(ContrastManager)
 CREATE(SlideManager)
 CREATE(DpmsManager)
-CREATE(ServerSideDecorationManager)
 CREATE2(ShmPool, Shm)
 CREATE(AppMenuManager)
-CREATE(Keystate)
-CREATE(ServerSideDecorationPaletteManager)
 
 #undef CREATE
 #undef CREATE2
@@ -900,3 +811,5 @@ Registry::operator wl_registry *()
 
 }
 }
+
+#include "moc_registry.cpp"
