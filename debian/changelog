@@ -1,3 +1,9 @@
+kwayland (4:6.2.3-1deepin1) unstable; urgency=medium
+
+  * Rebuild with LTO enabled (dpkg vendor feature optimize/lto).
+
+ -- tunaichao <tunaichao@uniontech.com>  Mon, 21 Sep 2026 15:08:29 +0800
+
 kwayland (4:6.2.3-1) unstable; urgency=medium
 
   [ Aurélien COUDERC ]
