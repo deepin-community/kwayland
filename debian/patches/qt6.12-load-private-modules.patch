@@ -16,8 +16,7 @@ Last-Update: 2026-11-04
 
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -42,6 +42,10 @@
-                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWaylandConfigVersion.cmake"
+@@ -42,6 +42,9 @@
                          SOVERSION 6)
  
  # Dependencies
