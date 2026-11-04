@@ -1,3 +1,9 @@
+kwayland (4:6.2.3-1deepin2) unstable; urgency=medium
+
+  * fix: opt in to Qt private module loading for Qt 6.12
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Wed, 04 Nov 2026 14:11:09 +0800
+
 kwayland (4:6.2.3-1deepin1) unstable; urgency=medium
 
   * Rebuild with LTO enabled (dpkg vendor feature optimize/lto).

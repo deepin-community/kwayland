@@ -1,0 +1,29 @@
+Description: opt in to Qt private module loading for Qt >= 6.9
+ kwayland links Qt6::WaylandClientPrivate. Since Qt 6.9 (and in 6.12),
+ the private module counterpart is no longer loaded automatically when
+ finding the public package: Qt6WaylandClientConfig.cmake only calls
+ find_package(Qt6WaylandClientPrivate) when QT_FIND_PRIVATE_MODULES is
+ set. Without this flag CMake generation fails with:
+ .
+   Target "KWaylandClient" links to: Qt6::WaylandClientPrivate
+   but the target was not found.
+ .
+ Set QT_FIND_PRIVATE_MODULES before the first find_package(Qt6*) call.
+ The flag is a no-op on older Qt versions.
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2026-11-04
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,6 +42,10 @@
+                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWaylandConfigVersion.cmake"
+                         SOVERSION 6)
+ 
+ # Dependencies
++# Qt >= 6.9 does not auto-load private module counterparts unless the
++# consumer opts in; needed for the Qt6::WaylandClientPrivate target.
++set(QT_FIND_PRIVATE_MODULES ON)
+ find_package(Qt6Gui ${QT_MIN_VERSION} REQUIRED NO_MODULE COMPONENTS Private)
+ find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED Concurrent)
+ find_package(Qt6WaylandClient ${QT_MIN_VERSION} CONFIG REQUIRED NO_MODULE COMPONENTS Private)
